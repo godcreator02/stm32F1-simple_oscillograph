@@ -1,7 +1,7 @@
 ..\..\output\port.o: ..\..\FreeRTOS\port\RVDS\ARM_CM3\port.c
 ..\..\output\port.o: ..\..\FreeRTOS\include\FreeRTOS.h
-..\..\output\port.o: F:\Program Files(x86)\Keil_v5\ARM\ARMCC\Bin\..\include\stddef.h
-..\..\output\port.o: F:\Program Files(x86)\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
+..\..\output\port.o: F:\keil5\ARM\ARMCC\Bin\..\include\stddef.h
+..\..\output\port.o: F:\keil5\ARM\ARMCC\Bin\..\include\stdint.h
 ..\..\output\port.o: ..\..\User\FreeRTOSConfig.h
 ..\..\output\port.o: ..\..\Libraries\CMSIS\stm32f10x.h
 ..\..\output\port.o: ..\..\Libraries\CMSIS\core_cm3.h
@@ -32,7 +32,7 @@
 ..\..\output\port.o: ..\..\Libraries\FWlib\inc\stm32f10x_wwdg.h
 ..\..\output\port.o: ..\..\Libraries\FWlib\inc\misc.h
 ..\..\output\port.o: ..\..\User\usart\bsp_usart.h
-..\..\output\port.o: F:\Program Files(x86)\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
+..\..\output\port.o: F:\keil5\ARM\ARMCC\Bin\..\include\stdio.h
 ..\..\output\port.o: ..\..\FreeRTOS\include\projdefs.h
 ..\..\output\port.o: ..\..\FreeRTOS\include\portable.h
 ..\..\output\port.o: ..\..\FreeRTOS\include\deprecated_definitions.h

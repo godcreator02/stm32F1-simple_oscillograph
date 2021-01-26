@@ -2,7 +2,7 @@
 ..\..\output\bsp_adc.o: ..\..\User\adc\bsp_adc.h
 ..\..\output\bsp_adc.o: ..\..\Libraries\CMSIS\stm32f10x.h
 ..\..\output\bsp_adc.o: ..\..\Libraries\CMSIS\core_cm3.h
-..\..\output\bsp_adc.o: F:\Program Files(x86)\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
+..\..\output\bsp_adc.o: F:\keil5\ARM\ARMCC\Bin\..\include\stdint.h
 ..\..\output\bsp_adc.o: ..\..\Libraries\CMSIS\system_stm32f10x.h
 ..\..\output\bsp_adc.o: ..\..\User\stm32f10x_conf.h
 ..\..\output\bsp_adc.o: ..\..\Libraries\FWlib\inc\stm32f10x_adc.h
@@ -31,7 +31,7 @@
 ..\..\output\bsp_adc.o: ..\..\Libraries\FWlib\inc\misc.h
 ..\..\output\bsp_adc.o: ..\..\STemWin_Task\MainTask.h
 ..\..\output\bsp_adc.o: ..\..\STemWin\inc\GUI.h
-..\..\output\bsp_adc.o: F:\Program Files(x86)\Keil_v5\ARM\ARMCC\Bin\..\include\stddef.h
+..\..\output\bsp_adc.o: F:\keil5\ARM\ARMCC\Bin\..\include\stddef.h
 ..\..\output\bsp_adc.o: ..\..\STemWin\inc\GUI_ConfDefaults.h
 ..\..\output\bsp_adc.o: ..\..\STemWin\Config\GUIConf.h
 ..\..\output\bsp_adc.o: ..\..\STemWin\inc\GUI_Type.h
@@ -76,4 +76,4 @@
 ..\..\output\bsp_adc.o: ..\..\STemWin\inc\TEXT.h
 ..\..\output\bsp_adc.o: ..\..\STemWin\inc\TREEVIEW.h
 ..\..\output\bsp_adc.o: ..\..\STemWin\inc\KNOB.h
-..\..\output\bsp_adc.o: F:\Program Files(x86)\Keil_v5\ARM\ARMCC\Bin\..\include\stdlib.h
+..\..\output\bsp_adc.o: F:\keil5\ARM\ARMCC\Bin\..\include\stdlib.h

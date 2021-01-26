@@ -1,6 +1,6 @@
 ..\..\output\guiconf.o: ..\..\STemWin\Config\GUIConf.c
 ..\..\output\guiconf.o: ..\..\STemWin\inc\GUI.h
-..\..\output\guiconf.o: F:\Program Files(x86)\Keil_v5\ARM\ARMCC\Bin\..\include\stddef.h
+..\..\output\guiconf.o: F:\keil5\ARM\ARMCC\Bin\..\include\stddef.h
 ..\..\output\guiconf.o: ..\..\STemWin\inc\GUI_ConfDefaults.h
 ..\..\output\guiconf.o: ..\..\STemWin\Config\GUIConf.h
 ..\..\output\guiconf.o: ..\..\STemWin\inc\GUI_Type.h
@@ -10,7 +10,7 @@
 ..\..\output\guiconf.o: ..\..\User\./sram/bsp_fsmc_sram.h
 ..\..\output\guiconf.o: ..\..\Libraries\CMSIS\stm32f10x.h
 ..\..\output\guiconf.o: ..\..\Libraries\CMSIS\core_cm3.h
-..\..\output\guiconf.o: F:\Program Files(x86)\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
+..\..\output\guiconf.o: F:\keil5\ARM\ARMCC\Bin\..\include\stdint.h
 ..\..\output\guiconf.o: ..\..\Libraries\CMSIS\system_stm32f10x.h
 ..\..\output\guiconf.o: ..\..\User\stm32f10x_conf.h
 ..\..\output\guiconf.o: ..\..\Libraries\FWlib\inc\stm32f10x_adc.h
@@ -38,4 +38,4 @@
 ..\..\output\guiconf.o: ..\..\Libraries\FWlib\inc\stm32f10x_wwdg.h
 ..\..\output\guiconf.o: ..\..\Libraries\FWlib\inc\misc.h
 ..\..\output\guiconf.o: ..\..\User\./usart/bsp_usart.h
-..\..\output\guiconf.o: F:\Program Files(x86)\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
+..\..\output\guiconf.o: F:\keil5\ARM\ARMCC\Bin\..\include\stdio.h

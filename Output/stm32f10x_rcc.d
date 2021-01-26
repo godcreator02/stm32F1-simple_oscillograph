@@ -2,7 +2,7 @@
 ..\..\output\stm32f10x_rcc.o: ..\..\Libraries\FWlib\inc\stm32f10x_rcc.h
 ..\..\output\stm32f10x_rcc.o: ..\..\Libraries\CMSIS\stm32f10x.h
 ..\..\output\stm32f10x_rcc.o: ..\..\Libraries\CMSIS\core_cm3.h
-..\..\output\stm32f10x_rcc.o: F:\Program Files(x86)\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
+..\..\output\stm32f10x_rcc.o: F:\keil5\ARM\ARMCC\Bin\..\include\stdint.h
 ..\..\output\stm32f10x_rcc.o: ..\..\Libraries\CMSIS\system_stm32f10x.h
 ..\..\output\stm32f10x_rcc.o: ..\..\User\stm32f10x_conf.h
 ..\..\output\stm32f10x_rcc.o: ..\..\Libraries\FWlib\inc\stm32f10x_adc.h

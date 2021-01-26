@@ -1,7 +1,7 @@
 ..\..\output\main.o: ..\..\User\main.c
 ..\..\output\main.o: ..\..\FreeRTOS\include\FreeRTOS.h
-..\..\output\main.o: F:\Program Files(x86)\Keil_v5\ARM\ARMCC\Bin\..\include\stddef.h
-..\..\output\main.o: F:\Program Files(x86)\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
+..\..\output\main.o: F:\keil5\ARM\ARMCC\Bin\..\include\stddef.h
+..\..\output\main.o: F:\keil5\ARM\ARMCC\Bin\..\include\stdint.h
 ..\..\output\main.o: ..\..\User\FreeRTOSConfig.h
 ..\..\output\main.o: ..\..\Libraries\CMSIS\stm32f10x.h
 ..\..\output\main.o: ..\..\Libraries\CMSIS\core_cm3.h
@@ -32,7 +32,7 @@
 ..\..\output\main.o: ..\..\Libraries\FWlib\inc\stm32f10x_wwdg.h
 ..\..\output\main.o: ..\..\Libraries\FWlib\inc\misc.h
 ..\..\output\main.o: ..\..\User\usart\bsp_usart.h
-..\..\output\main.o: F:\Program Files(x86)\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
+..\..\output\main.o: F:\keil5\ARM\ARMCC\Bin\..\include\stdio.h
 ..\..\output\main.o: ..\..\FreeRTOS\include\projdefs.h
 ..\..\output\main.o: ..\..\FreeRTOS\include\portable.h
 ..\..\output\main.o: ..\..\FreeRTOS\include\deprecated_definitions.h
@@ -54,7 +54,7 @@
 ..\..\output\main.o: ..\..\User\././beep/bsp_beep.h
 ..\..\output\main.o: ..\..\User\adc\bsp_adc.h
 ..\..\output\main.o: ..\..\User\././dac/bsp_dac.h
-..\..\output\main.o: F:\Program Files(x86)\Keil_v5\ARM\ARMCC\Bin\..\include\string.h
+..\..\output\main.o: F:\keil5\ARM\ARMCC\Bin\..\include\string.h
 ..\..\output\main.o: ..\..\User\TimBase\bsp_Timbase.h
 ..\..\output\main.o: ..\..\STemWin\inc\GUI.h
 ..\..\output\main.o: ..\..\STemWin\inc\GUI_ConfDefaults.h
@@ -102,7 +102,7 @@
 ..\..\output\main.o: ..\..\STemWin\inc\TREEVIEW.h
 ..\..\output\main.o: ..\..\STemWin\inc\KNOB.h
 ..\..\output\main.o: ..\..\STemWin_Task\MainTask.h
-..\..\output\main.o: F:\Program Files(x86)\Keil_v5\ARM\ARMCC\Bin\..\include\stdlib.h
+..\..\output\main.o: F:\keil5\ARM\ARMCC\Bin\..\include\stdlib.h
 ..\..\output\main.o: ..\..\User\FATFS\ff.h
 ..\..\output\main.o: ..\..\User\FATFS\integer.h
 ..\..\output\main.o: ..\..\User\FATFS\ffconf.h

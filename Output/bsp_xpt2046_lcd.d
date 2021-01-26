@@ -2,7 +2,7 @@
 ..\..\output\bsp_xpt2046_lcd.o: ..\..\User\./lcd/bsp_xpt2046_lcd.h
 ..\..\output\bsp_xpt2046_lcd.o: ..\..\Libraries\CMSIS\stm32f10x.h
 ..\..\output\bsp_xpt2046_lcd.o: ..\..\Libraries\CMSIS\core_cm3.h
-..\..\output\bsp_xpt2046_lcd.o: F:\Program Files(x86)\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
+..\..\output\bsp_xpt2046_lcd.o: F:\keil5\ARM\ARMCC\Bin\..\include\stdint.h
 ..\..\output\bsp_xpt2046_lcd.o: ..\..\Libraries\CMSIS\system_stm32f10x.h
 ..\..\output\bsp_xpt2046_lcd.o: ..\..\User\stm32f10x_conf.h
 ..\..\output\bsp_xpt2046_lcd.o: ..\..\Libraries\FWlib\inc\stm32f10x_adc.h
@@ -31,5 +31,5 @@
 ..\..\output\bsp_xpt2046_lcd.o: ..\..\Libraries\FWlib\inc\misc.h
 ..\..\output\bsp_xpt2046_lcd.o: ..\..\User\./lcd/bsp_ili9341_lcd.h
 ..\..\output\bsp_xpt2046_lcd.o: ..\..\User\./flash/bsp_spi_flash.h
-..\..\output\bsp_xpt2046_lcd.o: F:\Program Files(x86)\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
-..\..\output\bsp_xpt2046_lcd.o: F:\Program Files(x86)\Keil_v5\ARM\ARMCC\Bin\..\include\string.h
+..\..\output\bsp_xpt2046_lcd.o: F:\keil5\ARM\ARMCC\Bin\..\include\stdio.h
+..\..\output\bsp_xpt2046_lcd.o: F:\keil5\ARM\ARMCC\Bin\..\include\string.h

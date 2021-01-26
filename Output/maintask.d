@@ -1,7 +1,7 @@
 ..\..\output\maintask.o: ..\..\STemWin_Task\MainTask.c
 ..\..\output\maintask.o: ..\..\STemWin_Task\MainTask.h
 ..\..\output\maintask.o: ..\..\STemWin\inc\GUI.h
-..\..\output\maintask.o: F:\Program Files(x86)\Keil_v5\ARM\ARMCC\Bin\..\include\stddef.h
+..\..\output\maintask.o: F:\keil5\ARM\ARMCC\Bin\..\include\stddef.h
 ..\..\output\maintask.o: ..\..\STemWin\inc\GUI_ConfDefaults.h
 ..\..\output\maintask.o: ..\..\STemWin\Config\GUIConf.h
 ..\..\output\maintask.o: ..\..\STemWin\inc\GUI_Type.h
@@ -46,10 +46,10 @@
 ..\..\output\maintask.o: ..\..\STemWin\inc\TEXT.h
 ..\..\output\maintask.o: ..\..\STemWin\inc\TREEVIEW.h
 ..\..\output\maintask.o: ..\..\STemWin\inc\KNOB.h
-..\..\output\maintask.o: F:\Program Files(x86)\Keil_v5\ARM\ARMCC\Bin\..\include\stdlib.h
+..\..\output\maintask.o: F:\keil5\ARM\ARMCC\Bin\..\include\stdlib.h
 ..\..\output\maintask.o: ..\..\Libraries\CMSIS\stm32f10x.h
 ..\..\output\maintask.o: ..\..\Libraries\CMSIS\core_cm3.h
-..\..\output\maintask.o: F:\Program Files(x86)\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
+..\..\output\maintask.o: F:\keil5\ARM\ARMCC\Bin\..\include\stdint.h
 ..\..\output\maintask.o: ..\..\Libraries\CMSIS\system_stm32f10x.h
 ..\..\output\maintask.o: ..\..\User\stm32f10x_conf.h
 ..\..\output\maintask.o: ..\..\Libraries\FWlib\inc\stm32f10x_adc.h
@@ -79,7 +79,7 @@
 ..\..\output\maintask.o: ..\..\User\./bsp_all.h
 ..\..\output\maintask.o: ..\..\User\././led/bsp_led.h
 ..\..\output\maintask.o: ..\..\User\././usart/bsp_usart.h
-..\..\output\maintask.o: F:\Program Files(x86)\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
+..\..\output\maintask.o: F:\keil5\ARM\ARMCC\Bin\..\include\stdio.h
 ..\..\output\maintask.o: ..\..\User\././key/bsp_key.h
 ..\..\output\maintask.o: ..\..\User\././lcd/bsp_ili9341_lcd.h
 ..\..\output\maintask.o: ..\..\User\././lcd/bsp_xpt2046_lcd.h
@@ -90,5 +90,5 @@
 ..\..\output\maintask.o: ..\..\User\././beep/bsp_beep.h
 ..\..\output\maintask.o: ..\..\User\adc\bsp_adc.h
 ..\..\output\maintask.o: ..\..\User\././dac/bsp_dac.h
-..\..\output\maintask.o: F:\Program Files(x86)\Keil_v5\ARM\ARMCC\Bin\..\include\string.h
+..\..\output\maintask.o: F:\keil5\ARM\ARMCC\Bin\..\include\string.h
 ..\..\output\maintask.o: ..\..\User\TimBase\bsp_Timbase.h

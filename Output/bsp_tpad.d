@@ -2,7 +2,7 @@
 ..\..\output\bsp_tpad.o: ..\..\User\./TPAD/bsp_tpad.h
 ..\..\output\bsp_tpad.o: ..\..\Libraries\CMSIS\stm32f10x.h
 ..\..\output\bsp_tpad.o: ..\..\Libraries\CMSIS\core_cm3.h
-..\..\output\bsp_tpad.o: F:\Program Files(x86)\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
+..\..\output\bsp_tpad.o: F:\keil5\ARM\ARMCC\Bin\..\include\stdint.h
 ..\..\output\bsp_tpad.o: ..\..\Libraries\CMSIS\system_stm32f10x.h
 ..\..\output\bsp_tpad.o: ..\..\User\stm32f10x_conf.h
 ..\..\output\bsp_tpad.o: ..\..\Libraries\FWlib\inc\stm32f10x_adc.h
@@ -31,9 +31,9 @@
 ..\..\output\bsp_tpad.o: ..\..\Libraries\FWlib\inc\misc.h
 ..\..\output\bsp_tpad.o: ..\..\User\./Systick/bsp_SysTick.h
 ..\..\output\bsp_tpad.o: ..\..\User\./usart/bsp_usart.h
-..\..\output\bsp_tpad.o: F:\Program Files(x86)\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
+..\..\output\bsp_tpad.o: F:\keil5\ARM\ARMCC\Bin\..\include\stdio.h
 ..\..\output\bsp_tpad.o: ..\..\FreeRTOS\include\FreeRTOS.h
-..\..\output\bsp_tpad.o: F:\Program Files(x86)\Keil_v5\ARM\ARMCC\Bin\..\include\stddef.h
+..\..\output\bsp_tpad.o: F:\keil5\ARM\ARMCC\Bin\..\include\stddef.h
 ..\..\output\bsp_tpad.o: ..\..\User\FreeRTOSConfig.h
 ..\..\output\bsp_tpad.o: ..\..\FreeRTOS\include\projdefs.h
 ..\..\output\bsp_tpad.o: ..\..\FreeRTOS\include\portable.h

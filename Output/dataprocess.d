@@ -1,7 +1,7 @@
 ..\..\output\dataprocess.o: ..\..\STemWin_Task\DataProcess.c
 ..\..\output\dataprocess.o: ..\..\STemWin_Task\MainTask.h
 ..\..\output\dataprocess.o: ..\..\STemWin\inc\GUI.h
-..\..\output\dataprocess.o: F:\Program Files(x86)\Keil_v5\ARM\ARMCC\Bin\..\include\stddef.h
+..\..\output\dataprocess.o: F:\keil5\ARM\ARMCC\Bin\..\include\stddef.h
 ..\..\output\dataprocess.o: ..\..\STemWin\inc\GUI_ConfDefaults.h
 ..\..\output\dataprocess.o: ..\..\STemWin\Config\GUIConf.h
 ..\..\output\dataprocess.o: ..\..\STemWin\inc\GUI_Type.h
@@ -46,10 +46,10 @@
 ..\..\output\dataprocess.o: ..\..\STemWin\inc\TEXT.h
 ..\..\output\dataprocess.o: ..\..\STemWin\inc\TREEVIEW.h
 ..\..\output\dataprocess.o: ..\..\STemWin\inc\KNOB.h
-..\..\output\dataprocess.o: F:\Program Files(x86)\Keil_v5\ARM\ARMCC\Bin\..\include\stdlib.h
+..\..\output\dataprocess.o: F:\keil5\ARM\ARMCC\Bin\..\include\stdlib.h
 ..\..\output\dataprocess.o: ..\..\Libraries\CMSIS\stm32f10x.h
 ..\..\output\dataprocess.o: ..\..\Libraries\CMSIS\core_cm3.h
-..\..\output\dataprocess.o: F:\Program Files(x86)\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
+..\..\output\dataprocess.o: F:\keil5\ARM\ARMCC\Bin\..\include\stdint.h
 ..\..\output\dataprocess.o: ..\..\Libraries\CMSIS\system_stm32f10x.h
 ..\..\output\dataprocess.o: ..\..\User\stm32f10x_conf.h
 ..\..\output\dataprocess.o: ..\..\Libraries\FWlib\inc\stm32f10x_adc.h
@@ -79,7 +79,7 @@
 ..\..\output\dataprocess.o: ..\..\User\./bsp_all.h
 ..\..\output\dataprocess.o: ..\..\User\././led/bsp_led.h
 ..\..\output\dataprocess.o: ..\..\User\././usart/bsp_usart.h
-..\..\output\dataprocess.o: F:\Program Files(x86)\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
+..\..\output\dataprocess.o: F:\keil5\ARM\ARMCC\Bin\..\include\stdio.h
 ..\..\output\dataprocess.o: ..\..\User\././key/bsp_key.h
 ..\..\output\dataprocess.o: ..\..\User\././lcd/bsp_ili9341_lcd.h
 ..\..\output\dataprocess.o: ..\..\User\././lcd/bsp_xpt2046_lcd.h
@@ -90,5 +90,5 @@
 ..\..\output\dataprocess.o: ..\..\User\././beep/bsp_beep.h
 ..\..\output\dataprocess.o: ..\..\User\adc\bsp_adc.h
 ..\..\output\dataprocess.o: ..\..\User\././dac/bsp_dac.h
-..\..\output\dataprocess.o: F:\Program Files(x86)\Keil_v5\ARM\ARMCC\Bin\..\include\string.h
+..\..\output\dataprocess.o: F:\keil5\ARM\ARMCC\Bin\..\include\string.h
 ..\..\output\dataprocess.o: ..\..\User\TimBase\bsp_Timbase.h

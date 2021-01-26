@@ -1,8 +1,8 @@
 ..\..\output\timers.o: ..\..\FreeRTOS\src\timers.c
-..\..\output\timers.o: F:\Program Files(x86)\Keil_v5\ARM\ARMCC\Bin\..\include\stdlib.h
+..\..\output\timers.o: F:\keil5\ARM\ARMCC\Bin\..\include\stdlib.h
 ..\..\output\timers.o: ..\..\FreeRTOS\include\FreeRTOS.h
-..\..\output\timers.o: F:\Program Files(x86)\Keil_v5\ARM\ARMCC\Bin\..\include\stddef.h
-..\..\output\timers.o: F:\Program Files(x86)\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
+..\..\output\timers.o: F:\keil5\ARM\ARMCC\Bin\..\include\stddef.h
+..\..\output\timers.o: F:\keil5\ARM\ARMCC\Bin\..\include\stdint.h
 ..\..\output\timers.o: ..\..\User\FreeRTOSConfig.h
 ..\..\output\timers.o: ..\..\Libraries\CMSIS\stm32f10x.h
 ..\..\output\timers.o: ..\..\Libraries\CMSIS\core_cm3.h
@@ -33,7 +33,7 @@
 ..\..\output\timers.o: ..\..\Libraries\FWlib\inc\stm32f10x_wwdg.h
 ..\..\output\timers.o: ..\..\Libraries\FWlib\inc\misc.h
 ..\..\output\timers.o: ..\..\User\usart\bsp_usart.h
-..\..\output\timers.o: F:\Program Files(x86)\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
+..\..\output\timers.o: F:\keil5\ARM\ARMCC\Bin\..\include\stdio.h
 ..\..\output\timers.o: ..\..\FreeRTOS\include\projdefs.h
 ..\..\output\timers.o: ..\..\FreeRTOS\include\portable.h
 ..\..\output\timers.o: ..\..\FreeRTOS\include\deprecated_definitions.h

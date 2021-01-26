@@ -2,7 +2,7 @@
 ..\..\output\stm32f10x_it.o: ..\..\User\stm32f10x_it.h
 ..\..\output\stm32f10x_it.o: ..\..\Libraries\CMSIS\stm32f10x.h
 ..\..\output\stm32f10x_it.o: ..\..\Libraries\CMSIS\core_cm3.h
-..\..\output\stm32f10x_it.o: F:\Program Files(x86)\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
+..\..\output\stm32f10x_it.o: F:\keil5\ARM\ARMCC\Bin\..\include\stdint.h
 ..\..\output\stm32f10x_it.o: ..\..\Libraries\CMSIS\system_stm32f10x.h
 ..\..\output\stm32f10x_it.o: ..\..\User\stm32f10x_conf.h
 ..\..\output\stm32f10x_it.o: ..\..\Libraries\FWlib\inc\stm32f10x_adc.h
@@ -32,9 +32,9 @@
 ..\..\output\stm32f10x_it.o: ..\..\User\./sdio/bsp_sdio_sdcard.h
 ..\..\output\stm32f10x_it.o: ..\..\User\TimBase\bsp_TiMbase.h
 ..\..\output\stm32f10x_it.o: ..\..\User\usart\bsp_usart.h
-..\..\output\stm32f10x_it.o: F:\Program Files(x86)\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
+..\..\output\stm32f10x_it.o: F:\keil5\ARM\ARMCC\Bin\..\include\stdio.h
 ..\..\output\stm32f10x_it.o: ..\..\FreeRTOS\include\FreeRTOS.h
-..\..\output\stm32f10x_it.o: F:\Program Files(x86)\Keil_v5\ARM\ARMCC\Bin\..\include\stddef.h
+..\..\output\stm32f10x_it.o: F:\keil5\ARM\ARMCC\Bin\..\include\stddef.h
 ..\..\output\stm32f10x_it.o: ..\..\User\FreeRTOSConfig.h
 ..\..\output\stm32f10x_it.o: ..\..\FreeRTOS\include\projdefs.h
 ..\..\output\stm32f10x_it.o: ..\..\FreeRTOS\include\portable.h

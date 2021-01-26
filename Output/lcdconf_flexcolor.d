@@ -1,6 +1,6 @@
 ..\..\output\lcdconf_flexcolor.o: ..\..\STemWin\Config\LCDConf_FlexColor.c
 ..\..\output\lcdconf_flexcolor.o: ..\..\STemWin\inc\GUI.h
-..\..\output\lcdconf_flexcolor.o: F:\Program Files(x86)\Keil_v5\ARM\ARMCC\Bin\..\include\stddef.h
+..\..\output\lcdconf_flexcolor.o: F:\keil5\ARM\ARMCC\Bin\..\include\stddef.h
 ..\..\output\lcdconf_flexcolor.o: ..\..\STemWin\inc\GUI_ConfDefaults.h
 ..\..\output\lcdconf_flexcolor.o: ..\..\STemWin\Config\GUIConf.h
 ..\..\output\lcdconf_flexcolor.o: ..\..\STemWin\inc\GUI_Type.h
@@ -11,7 +11,7 @@
 ..\..\output\lcdconf_flexcolor.o: ..\..\User\./lcd/bsp_ili9341_lcd.h
 ..\..\output\lcdconf_flexcolor.o: ..\..\Libraries\CMSIS\stm32f10x.h
 ..\..\output\lcdconf_flexcolor.o: ..\..\Libraries\CMSIS\core_cm3.h
-..\..\output\lcdconf_flexcolor.o: F:\Program Files(x86)\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
+..\..\output\lcdconf_flexcolor.o: F:\keil5\ARM\ARMCC\Bin\..\include\stdint.h
 ..\..\output\lcdconf_flexcolor.o: ..\..\Libraries\CMSIS\system_stm32f10x.h
 ..\..\output\lcdconf_flexcolor.o: ..\..\User\stm32f10x_conf.h
 ..\..\output\lcdconf_flexcolor.o: ..\..\Libraries\FWlib\inc\stm32f10x_adc.h

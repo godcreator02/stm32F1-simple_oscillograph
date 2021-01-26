@@ -8,7 +8,7 @@
 ..\..\output\touch_calibration.o: ..\..\STemWin\inc\Global.h
 ..\..\output\touch_calibration.o: ..\..\STemWin\inc\WM_GUI.h
 ..\..\output\touch_calibration.o: ..\..\STemWin\inc\GUI.h
-..\..\output\touch_calibration.o: F:\Program Files(x86)\Keil_v5\ARM\ARMCC\Bin\..\include\stddef.h
+..\..\output\touch_calibration.o: F:\keil5\ARM\ARMCC\Bin\..\include\stddef.h
 ..\..\output\touch_calibration.o: ..\..\STemWin\inc\GUI_Version.h
 ..\..\output\touch_calibration.o: ..\..\STemWin\inc\BUTTON.h
 ..\..\output\touch_calibration.o: ..\..\STemWin\inc\DIALOG_Intern.h

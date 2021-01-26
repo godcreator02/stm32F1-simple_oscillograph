@@ -1,6 +1,6 @@
 ..\..\output\gui_x_freertos.o: ..\..\STemWin\OS\GUI_X_FreeRTOS.c
 ..\..\output\gui_x_freertos.o: ..\..\STemWin\inc\GUI.h
-..\..\output\gui_x_freertos.o: F:\Program Files(x86)\Keil_v5\ARM\ARMCC\Bin\..\include\stddef.h
+..\..\output\gui_x_freertos.o: F:\keil5\ARM\ARMCC\Bin\..\include\stddef.h
 ..\..\output\gui_x_freertos.o: ..\..\STemWin\inc\GUI_ConfDefaults.h
 ..\..\output\gui_x_freertos.o: ..\..\STemWin\Config\GUIConf.h
 ..\..\output\gui_x_freertos.o: ..\..\STemWin\inc\GUI_Type.h
@@ -8,7 +8,7 @@
 ..\..\output\gui_x_freertos.o: ..\..\STemWin\inc\Global.h
 ..\..\output\gui_x_freertos.o: ..\..\STemWin\inc\GUI_Version.h
 ..\..\output\gui_x_freertos.o: ..\..\FreeRTOS\include\FreeRTOS.h
-..\..\output\gui_x_freertos.o: F:\Program Files(x86)\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
+..\..\output\gui_x_freertos.o: F:\keil5\ARM\ARMCC\Bin\..\include\stdint.h
 ..\..\output\gui_x_freertos.o: ..\..\User\FreeRTOSConfig.h
 ..\..\output\gui_x_freertos.o: ..\..\Libraries\CMSIS\stm32f10x.h
 ..\..\output\gui_x_freertos.o: ..\..\Libraries\CMSIS\core_cm3.h
@@ -39,7 +39,7 @@
 ..\..\output\gui_x_freertos.o: ..\..\Libraries\FWlib\inc\stm32f10x_wwdg.h
 ..\..\output\gui_x_freertos.o: ..\..\Libraries\FWlib\inc\misc.h
 ..\..\output\gui_x_freertos.o: ..\..\User\usart\bsp_usart.h
-..\..\output\gui_x_freertos.o: F:\Program Files(x86)\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
+..\..\output\gui_x_freertos.o: F:\keil5\ARM\ARMCC\Bin\..\include\stdio.h
 ..\..\output\gui_x_freertos.o: ..\..\FreeRTOS\include\projdefs.h
 ..\..\output\gui_x_freertos.o: ..\..\FreeRTOS\include\portable.h
 ..\..\output\gui_x_freertos.o: ..\..\FreeRTOS\include\deprecated_definitions.h

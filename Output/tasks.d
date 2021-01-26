@@ -1,9 +1,9 @@
 ..\..\output\tasks.o: ..\..\FreeRTOS\src\tasks.c
-..\..\output\tasks.o: F:\Program Files(x86)\Keil_v5\ARM\ARMCC\Bin\..\include\stdlib.h
-..\..\output\tasks.o: F:\Program Files(x86)\Keil_v5\ARM\ARMCC\Bin\..\include\string.h
+..\..\output\tasks.o: F:\keil5\ARM\ARMCC\Bin\..\include\stdlib.h
+..\..\output\tasks.o: F:\keil5\ARM\ARMCC\Bin\..\include\string.h
 ..\..\output\tasks.o: ..\..\FreeRTOS\include\FreeRTOS.h
-..\..\output\tasks.o: F:\Program Files(x86)\Keil_v5\ARM\ARMCC\Bin\..\include\stddef.h
-..\..\output\tasks.o: F:\Program Files(x86)\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
+..\..\output\tasks.o: F:\keil5\ARM\ARMCC\Bin\..\include\stddef.h
+..\..\output\tasks.o: F:\keil5\ARM\ARMCC\Bin\..\include\stdint.h
 ..\..\output\tasks.o: ..\..\User\FreeRTOSConfig.h
 ..\..\output\tasks.o: ..\..\Libraries\CMSIS\stm32f10x.h
 ..\..\output\tasks.o: ..\..\Libraries\CMSIS\core_cm3.h
@@ -34,7 +34,7 @@
 ..\..\output\tasks.o: ..\..\Libraries\FWlib\inc\stm32f10x_wwdg.h
 ..\..\output\tasks.o: ..\..\Libraries\FWlib\inc\misc.h
 ..\..\output\tasks.o: ..\..\User\usart\bsp_usart.h
-..\..\output\tasks.o: F:\Program Files(x86)\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
+..\..\output\tasks.o: F:\keil5\ARM\ARMCC\Bin\..\include\stdio.h
 ..\..\output\tasks.o: ..\..\FreeRTOS\include\projdefs.h
 ..\..\output\tasks.o: ..\..\FreeRTOS\include\portable.h
 ..\..\output\tasks.o: ..\..\FreeRTOS\include\deprecated_definitions.h

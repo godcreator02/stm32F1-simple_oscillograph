@@ -2,7 +2,7 @@
 ..\..\output\bsp_sdio_sdcard.o: ..\..\User\./sdio/bsp_sdio_sdcard.h
 ..\..\output\bsp_sdio_sdcard.o: ..\..\Libraries\CMSIS\stm32f10x.h
 ..\..\output\bsp_sdio_sdcard.o: ..\..\Libraries\CMSIS\core_cm3.h
-..\..\output\bsp_sdio_sdcard.o: F:\Program Files(x86)\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
+..\..\output\bsp_sdio_sdcard.o: F:\keil5\ARM\ARMCC\Bin\..\include\stdint.h
 ..\..\output\bsp_sdio_sdcard.o: ..\..\Libraries\CMSIS\system_stm32f10x.h
 ..\..\output\bsp_sdio_sdcard.o: ..\..\User\stm32f10x_conf.h
 ..\..\output\bsp_sdio_sdcard.o: ..\..\Libraries\FWlib\inc\stm32f10x_adc.h
@@ -30,4 +30,4 @@
 ..\..\output\bsp_sdio_sdcard.o: ..\..\Libraries\FWlib\inc\stm32f10x_wwdg.h
 ..\..\output\bsp_sdio_sdcard.o: ..\..\Libraries\FWlib\inc\misc.h
 ..\..\output\bsp_sdio_sdcard.o: ..\..\User\./usart/bsp_usart.h
-..\..\output\bsp_sdio_sdcard.o: F:\Program Files(x86)\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
+..\..\output\bsp_sdio_sdcard.o: F:\keil5\ARM\ARMCC\Bin\..\include\stdio.h
