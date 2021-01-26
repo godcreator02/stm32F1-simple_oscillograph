@@ -13,33 +13,25 @@ uint16_t MaxValue = 0;
 uint16_t MinValue = 4096;
 uint16_t PPValue = 0;
 
-const uint8_t SPSPscNums = 8;
-const uint16_t SPSPscForADC[SPSPscNums] = {5, 10, 20, 50, 100, 200, 500, 1000};
-const char *SPSPscForShow[SPSPscNums] = {"200k*6 ", "100k", "50k", "20k", "10k", "5k", "2k", "1k"};
 
-const uint8_t FrqPscNums = 10;
-const uint16_t FrqPscForDAC[FrqPscNums] = {1, 2, 5, 10, 20, 50, 100, 200, 500, 1000};
-const char *FrqPscForShow[FrqPscNums] = {"112500", "56250", "22500", "11250", "5625", "2250", "1125", "562.5",
-                                         "225", "112.5"};
 
-int CirMinus(int x, int y)
+int CirMinus(int x, int y, int16_t BufferSize)
 {
     if ((x - y) == -1)
     {
-        return Wave_BufferTempSize;
+        return BufferSize;
     }
     if ((x - y) == -2)
     {
-        return (Wave_BufferTempSize - 1);
+        return (BufferSize - 1);
     }
     return (x - y);
 }
 
-void DataToDisplay(void)
-{
-    int i, j;
-    double y1, y2, x0, x1, x2;
 
+uint16_t DataProcess(void)
+{
+    uint16_t i, j;
     /* 拷贝数据到Wave_BufferTemp，避免DMA过快覆盖数组数据 */
     /* 获取ADC_DMA当前位置 */
     ADC_DMA_Pos = ADC_DataSize - DMA_GetCurrDataCounter(ADC_DMA_CHANNEL);
@@ -52,31 +44,23 @@ void DataToDisplay(void)
         /* 用于校准拷贝数组时的位置 */
         Array_DMA_Pos = Wave_BufferTempSize - ADC_DMA_Pos;
 
-        j = 0;
         //printf("pos = %d\n",(ADC_DataSize - Array_DMA_Pos));
-        for (i = ADC_DataSize - Array_DMA_Pos; i < ADC_DataSize; i++)
+        for (j = 0, i = ADC_DataSize - Array_DMA_Pos; i < ADC_DataSize; i++, j++)
         {
-
-			Wave_BufferTemp[j] = ADC_ConvertedValue[i];
-
-            j++;
+			Wave_BufferTemp[j] = ADC_ConvertedValue[i]; 
         }
         //printf("j1a = %d\n",j);
-        for (i = 0; i < ADC_DMA_Pos; i++)
+        for (i = 0; i < ADC_DMA_Pos; i++, j++)
         {
-
 			Wave_BufferTemp[j] = ADC_ConvertedValue[i];
-            j++;
         }
         //printf("j1b = %d\n",j);
     }
     else
     {
-        j = 0;
-        for (i = ADC_DMA_Pos - Wave_BufferTempSize; i < ADC_DMA_Pos; i++)
+        for (j = 0, i = ADC_DMA_Pos - Wave_BufferTempSize; i < ADC_DMA_Pos; i++, j++)
         {
 			Wave_BufferTemp[j] = ADC_ConvertedValue[i];
-            j++;
         }
         //printf("j2 = %d\n",j);
     }
@@ -109,27 +93,42 @@ void DataToDisplay(void)
     PPValue = 0;
     for (i = 0; i < Wave_BufferTempSize; i++)
     {
-        if (Wave_BufferTemp[i] > MaxValue)
-        {
-            MaxValue = Wave_BufferTemp[i];
-        }
-        if (Wave_BufferTemp[i] < MinValue)
-        {
-            MinValue = Wave_BufferTemp[i];
-        }
+        MaxValue = ( Wave_BufferTemp[i] > MaxValue ) ? Wave_BufferTemp[i] : MaxValue;
+        MinValue = ( Wave_BufferTemp[i] < MinValue ) ? Wave_BufferTemp[i] : MinValue;
     }
     PPValue = MaxValue - MinValue;
 
-    /* 从Wave_BufferTemp拷贝到显示用的数组 */
-    for (i = 0; i < 240; i++)
-    {
-        ADC_DataShow[i] = -(Wave_BufferTemp[(i + j)] / 23);
-
-    }
+    return j;
 }
 
-void DrawGraph(void)
+/* 从Wave_BufferTemp拷贝到显示用的数组 */
+/* 因子都是缩小几倍,正为右、上移，负为左、下移 */
+void ShowBufferProcess(uint16_t j, uint8_t xScaleFactor, uint8_t yScaleFactor, int16_t xShift, int16_t yShift)
 {
-    GUI_SetColor(GUI_YELLOW);
-    GUI_DrawGraph((signed short *)ADC_DataShow, GUI_COUNTOF(ADC_DataShow), GraphRect.x0, GraphRect.y1);
+
+    j = ((Wave_BufferTempSize - j - xShift) < ADC_BufferSize * xScaleFactor) 
+        ? Wave_BufferTempSize - ADC_BufferSize * xScaleFactor
+        : j + xShift;
+
+    for (uint8_t i = 0; i < ADC_BufferSize; i++)
+    {
+        ADC_DataShow[i] = -(Wave_BufferTemp[(i * xScaleFactor + j)] / 23 / yScaleFactor -yShift);
+    }
+
+}
+
+uint16_t readSomeValue(uint8_t n)
+{
+    switch (n)
+    {
+    case 0:
+        return MaxValue;
+    case 1:
+        return MinValue;
+    case 2:
+        return PPValue;
+    default:
+        printf("error: readValue wrong");
+        return 555;
+    }
 }

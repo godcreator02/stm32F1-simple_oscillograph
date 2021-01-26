@@ -34,8 +34,16 @@ typedef struct
  ******************************************************************************/
 
 /* 主界面显示位置 */
-const char pT[] = {"SPS:"};
-const char pT1[] = {"Fq:"};
+static const char *pT[] = {"SPS:","Fq:"};
+
+const uint16_t SPSPscForADC[SPSPscNums] = {5, 10, 20, 50, 100, 200, 500, 1000};
+const char *SPSPscForShow[SPSPscNums] = {"200k*6", "100k*6", "50k*6", "20k*6", "10k*6", "5k*6", "2k*6", "1k*6"};
+
+const uint16_t FrqPscForDAC[FrqPscNums] = {1, 2, 5, 10, 20, 50, 100, 200, 500, 1000};
+const char *FrqPscForShow[FrqPscNums] = {"112500", "56250", "22500", "11250", "5625", "2250", "1125", "562.5",
+                                         "225", "112.5"};
+
+SHOWPARAMS showParams = { 1, 1, 0 ,0 };
 
 uint16_t t0, delta_t;
 static uint32_t paintcount = 0;
@@ -72,6 +80,14 @@ TEXT_Handle hText5;
  *	返 回 值: 无
  *********************************************************************************************************
  */
+
+void DrawGraph(void)
+{
+    GUI_SetColor(GUI_YELLOW);
+    GUI_DrawGraph((signed short *)ADC_DataShow, GUI_COUNTOF(ADC_DataShow), GraphRect.x0, GraphRect.y1);
+}
+
+
 static void Draw_BK(void *pData);
 
 static void _cbGraphFrame(WM_MESSAGE *pMsg)
@@ -199,6 +215,7 @@ static void _cbBkWin(WM_MESSAGE *pMsg)
             {
             case WM_NOTIFICATION_CLICKED:
                 printf("delta t = %dms\n", delta_t);
+                showParams.xShift += 10;
                 LED1(ON);
                 break;
             case WM_NOTIFICATION_RELEASED:
@@ -213,6 +230,7 @@ static void _cbBkWin(WM_MESSAGE *pMsg)
             {
             case WM_NOTIFICATION_CLICKED:
                 printf("Free = %dBytes\n", xfree);
+                showParams.yShift += 10;
                 LED2(ON);
                 break;
             case WM_NOTIFICATION_RELEASED:
@@ -354,7 +372,7 @@ static void Graph_Refresh(void)
     GUI_RECT Rect;
 
     /* 这个算数据函数基本不耗时间 0ms */
-    DataToDisplay();
+    ShowBufferProcess(DataProcess(), showParams.xSacleFactor, showParams.ySacleFactor, showParams.xShift, showParams.yShift);
 
     TEXT_SetDec(hText2, PPValue, 4, 0, 0, 0);
 
@@ -376,7 +394,7 @@ void MainTask(void)
 
     while (1)
     {
-        //xfree = GUI_ALLOC_GetNumFreeBytes();
+        xfree = GUI_ALLOC_GetNumFreeBytes();
         //t0 = GUI_GetTime();
 
         Graph_Refresh();
