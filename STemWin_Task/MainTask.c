@@ -199,8 +199,7 @@ static void _cbBkWin(WM_MESSAGE *pMsg)
         GUI_DrawLine(0, 180, 320, 180);
 
         paintcount++;
-        GUI_DispDecAt(paintcount, 280, 170, 5);
-
+        GUI_DispDecAt(paintcount, 280, 150, 5);
         //printf("Bk_P\n");
         break;
 
