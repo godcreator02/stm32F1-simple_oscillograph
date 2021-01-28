@@ -191,7 +191,6 @@ static void DataProcess_Task(void *parameter)
 
     while (1)
     {
-        /* ²ÉÑùÂÊ */
         switch (Key_Scan(KEY1_GPIO_PORT, KEY1_GPIO_PIN))
         {
         case KEY_ON:

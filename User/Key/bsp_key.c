@@ -105,6 +105,7 @@ uint8_t Key_Scan(GPIO_TypeDef *GPIOx, uint16_t GPIO_Pin)
 	case KEY_ON:
 		switch (KeyTemp->KeyPhysic)
 		{
+		//（1，1）中将关闭计数清零，并对开启计数累加直到切换至逻辑长按状态
 		case KEY_ON:
 			KeyTemp->KeyOFFCounts = 0;
 			KeyTemp->KeyONCounts++;
@@ -116,6 +117,7 @@ uint8_t Key_Scan(GPIO_TypeDef *GPIOx, uint16_t GPIO_Pin)
 			}
 			return KEY_IDLE;
 
+		//（1，0）中对关闭计数累加直到切换至逻辑关闭状态
 		case KEY_OFF:
 			KeyTemp->KeyOFFCounts++;
 			if (KeyTemp->KeyOFFCounts >= SHAKES_COUNTS)
@@ -133,6 +135,7 @@ uint8_t Key_Scan(GPIO_TypeDef *GPIOx, uint16_t GPIO_Pin)
 	case KEY_OFF:
 		switch (KeyTemp->KeyPhysic)
 		{
+		//（0，1）中对开启计数累加直到切换至逻辑开启状态
 		case KEY_ON:
 			(KeyTemp->KeyONCounts)++;
 			if (KeyTemp->KeyONCounts >= SHAKES_COUNTS)
@@ -144,6 +147,7 @@ uint8_t Key_Scan(GPIO_TypeDef *GPIOx, uint16_t GPIO_Pin)
 			}
 			return KEY_IDLE;
 
+		//（0，0）中将开启计数清零
 		case KEY_OFF:
 			(KeyTemp->KeyONCounts) = 0;
 			return KEY_IDLE;
@@ -154,10 +158,11 @@ uint8_t Key_Scan(GPIO_TypeDef *GPIOx, uint16_t GPIO_Pin)
 	case KEY_HOLD:
 		switch (KeyTemp->KeyPhysic)
 		{
+		//（2，1）对关闭计数清零
 		case KEY_ON:
 			KeyTemp->KeyOFFCounts = 0;
 			return KEY_HOLD;
-
+		//（2，0）对关闭计数累加直到切换至逻辑关闭状态
 		case KEY_OFF:
 			(KeyTemp->KeyOFFCounts)++;
 			if (KeyTemp->KeyOFFCounts >= SHAKES_COUNTS)
