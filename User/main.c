@@ -28,7 +28,6 @@
 #include "./bsp_all.h"
 /* STemWIN头文件 */
 #include "GUI.h"
-#include "DIALOG.h"
 #include "MainTask.h"
 
 /* FATFS */
@@ -195,29 +194,13 @@ static void DataProcess_Task(void *parameter)
         /* 采样率 */
         if (Key_Scan(KEY1_GPIO_PORT, KEY1_GPIO_PIN) == KEY_ON)
         {
-            SRS_Select++;
-            if (SRS_Select == SPSPscNums)
-            {
-                SRS_Select = 0;
-            }
-
-            TIM_PrescalerConfig(TIM3, SPSPscForADC[SRS_Select] - 1, TIM_PSCReloadMode_Immediate);
-            TEXT_SetText(hText0,SPSPscForShow[SRS_Select]);
-            //TEXT_SetDec(hText0, 5555, 6, 0, 0, 0);
-            //WM_SendMessageNoPara(hText0, WM_PAINT);
+            
         }
 
         /* DAC频率 */
         if (Key_Scan(KEY2_GPIO_PORT, KEY2_GPIO_PIN) == KEY_ON)
         {
-            Frq_Select++;
-            if (Frq_Select == FrqPscNums)
-            {
-                Frq_Select = 0;
-            }
-
-            TIM_PrescalerConfig(TIM2, FrqPscForDAC[Frq_Select] - 1, TIM_PSCReloadMode_Immediate);
-            TEXT_SetText(hText1,FrqPscForShow[Frq_Select]);
+            
         }
         //DataToDisplay();
         vTaskDelay(20);

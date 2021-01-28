@@ -16,7 +16,6 @@
   */
 
 #include "./dac/bsp_dac.h"
-#include "MainTask.h"
 
 //正弦波单个周期的点数
 #define POINT_NUM 32
@@ -86,8 +85,8 @@ static void DAC_TIM_Config(void)
 
     /* TIM2基本定时器配置 */
     // TIM_TimeBaseStructInit(&TIM_TimeBaseStructure);
-    TIM_TimeBaseStructure.TIM_Period = (20 - 1);                 //定时周期
-    TIM_TimeBaseStructure.TIM_Prescaler = (FrqPscForDAC[9] - 1); //预分频 72M / (0+1) = 72M
+    TIM_TimeBaseStructure.TIM_Period = (12 - 1);                 //定时周期
+    TIM_TimeBaseStructure.TIM_Prescaler = (50 - 1); //预分频 72M / (0+1) = 72M
     TIM_TimeBaseStructure.TIM_ClockDivision = 0x0;               //时钟分频系数
     TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;  //向上计数模式
     TIM_TimeBaseInit(TIM2, &TIM_TimeBaseStructure);
