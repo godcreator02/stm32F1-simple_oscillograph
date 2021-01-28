@@ -212,7 +212,7 @@ static void DataProcess_Task(void *parameter)
             break;
         }
 
-        /*switch (Key_Scan(KEY2_GPIO_PORT, KEY2_GPIO_PIN))
+        switch (Key_Scan(KEY2_GPIO_PORT, KEY2_GPIO_PIN))
         {
         case KEY_ON:
             printf("Key2ON\n");
@@ -231,7 +231,7 @@ static void DataProcess_Task(void *parameter)
         default:
           
             break;
-        }*/
+        }
         
 
         vTaskDelay(20);

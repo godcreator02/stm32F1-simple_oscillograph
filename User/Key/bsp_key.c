@@ -53,7 +53,9 @@ void Key_GPIO_Config(void)
  * 输出  ：KEY_OFF(没按下按键)、KEY_ON（按下按键）
  */
 
-static KEY_TypeDef Key[2] = {{KEY_OFF, 0, 0}, {KEY_OFF, 0, 0}};
+static KEY_TypeDef Key[2] =
+	{{KEY_OFF, KEY_OFF, 0, 0},
+	 {KEY_OFF, KEY_OFF, 0, 0}};
 
 uint8_t Key_Scan(GPIO_TypeDef *GPIOx, uint16_t GPIO_Pin)
 {
@@ -95,11 +97,13 @@ uint8_t Key_Scan(GPIO_TypeDef *GPIOx, uint16_t GPIO_Pin)
 		return KEY_IDLE;
 	}
 
+	KeyTemp->KeyPhysic = GPIO_ReadInputDataBit(GPIOx, GPIO_Pin);
+
 	/* 检测按下、松开、长按 */
 	switch (KeyTemp->KeyLogic)
 	{
 	case KEY_ON:
-		switch (GPIO_ReadInputDataBit(GPIOx, GPIO_Pin))
+		switch (KeyTemp->KeyPhysic)
 		{
 		case KEY_ON:
 			KeyTemp->KeyOFFCounts = 0;
@@ -128,7 +132,7 @@ uint8_t Key_Scan(GPIO_TypeDef *GPIOx, uint16_t GPIO_Pin)
 		}
 
 	case KEY_OFF:
-		switch (GPIO_ReadInputDataBit(GPIOx, GPIO_Pin))
+		switch (KeyTemp->KeyPhysic)
 		{
 		case KEY_ON:
 			(KeyTemp->KeyONCounts)++;
@@ -149,7 +153,7 @@ uint8_t Key_Scan(GPIO_TypeDef *GPIOx, uint16_t GPIO_Pin)
 		}
 
 	case KEY_HOLD:
-		switch (GPIO_ReadInputDataBit(GPIOx, GPIO_Pin))
+		switch (KeyTemp->KeyPhysic)
 		{
 		case KEY_ON:
 			return KEY_HOLD;
