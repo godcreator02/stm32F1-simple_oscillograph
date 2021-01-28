@@ -204,7 +204,7 @@ static void DataProcess_Task(void *parameter)
         case KEY_OFF:
             printf("Key1OFF\n");
             break;
-        case 10:
+        case KEY_ERROR:
             printf("error\n");
             break;
         default:
@@ -225,7 +225,7 @@ static void DataProcess_Task(void *parameter)
         case KEY_OFF:
             printf("Key2OFF\n");
             break;
-        case 10:
+        case KEY_ERROR:
             printf("error\n");
             break;
         default:

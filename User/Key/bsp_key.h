@@ -43,6 +43,8 @@ typedef struct
 #define    	KEY_HOLD		2
 #define		KEY_IDLE		3
 
+#define		KEY_ERROR		10
+
 #define		HOLD_COUNTS			50
 #define 	SHAKES_COUNTS		5
 
