@@ -121,7 +121,6 @@ uint8_t Key_Scan(GPIO_TypeDef *GPIOx, uint16_t GPIO_Pin)
 			if (KeyTemp->KeyOFFCounts >= SHAKES_COUNTS)
 			{
 				KeyTemp->KeyLogic = KEY_OFF;
-				KeyTemp->KeyONCounts = 0;
 				KeyTemp->KeyOFFCounts = 0;
 				return KEY_OFF;
 			}
@@ -140,7 +139,7 @@ uint8_t Key_Scan(GPIO_TypeDef *GPIOx, uint16_t GPIO_Pin)
 			{
 				KeyTemp->KeyLogic = KEY_ON;
 				KeyTemp->KeyONCounts = 0;
-				KeyTemp->KeyOFFCounts = 0;
+
 				return KEY_ON;
 			}
 			return KEY_IDLE;
@@ -156,6 +155,7 @@ uint8_t Key_Scan(GPIO_TypeDef *GPIOx, uint16_t GPIO_Pin)
 		switch (KeyTemp->KeyPhysic)
 		{
 		case KEY_ON:
+			KeyTemp->KeyOFFCounts = 0;
 			return KEY_HOLD;
 
 		case KEY_OFF:
@@ -163,7 +163,6 @@ uint8_t Key_Scan(GPIO_TypeDef *GPIOx, uint16_t GPIO_Pin)
 			if (KeyTemp->KeyOFFCounts >= SHAKES_COUNTS)
 			{
 				KeyTemp->KeyLogic = KEY_OFF;
-				KeyTemp->KeyONCounts = 0;
 				KeyTemp->KeyOFFCounts = 0;
 				return KEY_OFF;
 			}
