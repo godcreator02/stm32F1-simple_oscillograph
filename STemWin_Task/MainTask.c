@@ -27,6 +27,9 @@
 #include "MainTask.h"
 
 
+
+
+
 void MainTask(void)
 {   
     GUI_Init();
@@ -38,6 +41,7 @@ void MainTask(void)
     GUI_DispStringAt("Hello World",10,10);
     while (1)
     {
+
         GUI_Delay(50);
     }
     

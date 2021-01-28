@@ -192,15 +192,47 @@ static void DataProcess_Task(void *parameter)
     while (1)
     {
         /* ²ÉÑùÂÊ */
-        if (Key_Scan(KEY1_GPIO_PORT, KEY1_GPIO_PIN) == KEY_ON)
+        switch (Key_Scan(KEY1_GPIO_PORT, KEY1_GPIO_PIN))
         {
+        case KEY_ON:
             printf("Key1ON\n");
+            break;
+        
+        case KEY_HOLD:
+            printf("Key1HOLD\n");
+            break;
+        case KEY_OFF:
+            printf("Key1OFF\n");
+            break;
+        case 10:
+            printf("error\n");
+            break;
+        default:
+
+            break;
         }
 
-        if (Key_Scan(KEY2_GPIO_PORT, KEY2_GPIO_PIN) == KEY_ON)
+        /*switch (Key_Scan(KEY2_GPIO_PORT, KEY2_GPIO_PIN))
         {
+        case KEY_ON:
             printf("Key2ON\n");
-        }
+            break;
+        
+        case KEY_HOLD:
+            printf("Key2HOLD\n");
+            break;
+        
+        case KEY_OFF:
+            printf("Key2OFF\n");
+            break;
+        case 10:
+            printf("error\n");
+            break;
+        default:
+          
+            break;
+        }*/
+        
 
         vTaskDelay(20);
     }

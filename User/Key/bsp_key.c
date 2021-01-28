@@ -53,25 +53,39 @@ void Key_GPIO_Config(void)
  * 输出  ：KEY_OFF(没按下按键)、KEY_ON（按下按键）
  */
 
-static uint8_t Key1Flag = 0;
-static uint8_t Key2Flag = 0;
+
+//static KEY_TypeDef Key[2] = {{0,0,0},{0,0,0}};
+
+static uint8_t Key1Logic = 0;
+static uint8_t Key1ONCounts = 0;
+static uint8_t Key1OFFCounts = 0;
+
+static uint8_t Key2Logic = 0;
+static uint8_t Key2ONCounts = 0;
+static uint8_t Key2OFFCounts = 0;
 
 uint8_t Key_Scan(GPIO_TypeDef* GPIOx,uint16_t GPIO_Pin)
 {	
-	uint8_t* KeyFlag;
+	uint8_t* KeyLogic;
+	uint8_t* KeyONCounts;
+	uint8_t* KeyOFFCounts;
 
+	//检查按下的是哪一个按钮
 	switch ((uint32_t)GPIOx)
 	{
 	case ((uint32_t)KEY1_GPIO_PORT):
 		switch (GPIO_Pin)
 		{
 		case KEY1_GPIO_PIN:
-			KeyFlag = &Key1Flag;
+			KeyLogic = &Key1Logic;
+			KeyONCounts = &Key1ONCounts;
+			KeyOFFCounts = &Key1OFFCounts;
 			break;
 		
+		//port和pin不匹配
 		default:
 			printf("error: GPIO port pin not match\r\n");
-			return KEY_OFF;
+			return KEY_IDLE;
 			
 		}
 		break;
@@ -80,36 +94,109 @@ uint8_t Key_Scan(GPIO_TypeDef* GPIOx,uint16_t GPIO_Pin)
 		switch (GPIO_Pin)
 		{
 		case KEY2_GPIO_PIN:
-			KeyFlag = &Key2Flag;
+			KeyLogic = &Key2Logic;
+			KeyONCounts = &Key2ONCounts;
+			KeyOFFCounts = &Key2OFFCounts;
 			break;
-		
+
+		//port和pin不匹配
 		default:
 			printf("error: GPIO port pin not match\r\n");
-			return KEY_OFF;
+			return KEY_IDLE;
 			
 		}
 		break;
 
 	default:
 		printf("error: key do not exist\r\n");
-		return KEY_OFF;
+		return KEY_IDLE;
 	}
 
-	/*检测是否有按键按下 */
-	if( !(*KeyFlag) && (GPIO_ReadInputDataBit(GPIOx,GPIO_Pin) == KEY_ON ))  
+
+	/* 检测按下、松开、长按 */
+	switch (*KeyLogic)
 	{
-		*KeyFlag = 1;
-		return 	KEY_ON;	 		
+	case KEY_ON:
+		switch (GPIO_ReadInputDataBit(GPIOx,GPIO_Pin))
+		{
+		case KEY_ON:
+			(*KeyOFFCounts) = 0;
+			(*KeyONCounts)++;
+			if(*KeyONCounts >= HOLD_COUNTS)
+			{
+				*KeyONCounts = 0;
+				*KeyLogic = KEY_HOLD;
+				return KEY_HOLD;
+			}
+			return KEY_IDLE;
+
+		case KEY_OFF:
+			(*KeyOFFCounts)++;
+			if(*KeyOFFCounts >= SHAKES_COUNTS)
+			{
+				*KeyLogic = KEY_OFF;
+				*KeyONCounts = 0;
+				*KeyOFFCounts = 0;
+				return 	KEY_OFF;	
+			}
+			return KEY_IDLE;
+
+		default:
+			break;
+		}
+
+
+
+	case KEY_OFF:
+		switch (GPIO_ReadInputDataBit(GPIOx,GPIO_Pin))
+		{
+		case KEY_ON:
+			(*KeyONCounts)++;
+			if(*KeyONCounts >= SHAKES_COUNTS)
+			{
+				*KeyLogic = KEY_ON;
+				*KeyONCounts = 0;
+				*KeyOFFCounts = 0;
+				return 	KEY_ON;	
+			}
+			return KEY_IDLE; 
+
+		case KEY_OFF:
+			(*KeyONCounts) = 0;
+			return KEY_IDLE; 
+		default:
+			break;
+		}
+
+
+
+	case KEY_HOLD:
+		switch (GPIO_ReadInputDataBit(GPIOx,GPIO_Pin))
+		{
+		case KEY_ON:
+			return KEY_HOLD;
+
+		case KEY_OFF:
+			(*KeyOFFCounts)++;
+			if(*KeyOFFCounts >= SHAKES_COUNTS)
+			{
+				*KeyLogic = KEY_OFF;
+				*KeyONCounts = 0;
+				*KeyOFFCounts = 0;
+				return 	KEY_OFF;	
+			}
+			return KEY_IDLE;
+
+		default:
+			break;
+		}
+
+
+	default:
+		break;
 	}
-	else if( (*KeyFlag) && (GPIO_ReadInputDataBit(GPIOx,GPIO_Pin) == KEY_OFF))
-	{
-		*KeyFlag = 0;
-		return 	KEY_OFF;
-	}
-	else
-	{
-		return KEY_OFF;
-	}
+
+	return 10;
 		
 }
 /*********************************************END OF FILE**********************/

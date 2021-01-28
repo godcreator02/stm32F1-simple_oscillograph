@@ -987,7 +987,7 @@
       <GroupNumber>9</GroupNumber>
       <FileNumber>62</FileNumber>
       <FileType>1</FileType>
-      <tvExp>0</tvExp>
+      <tvExp>1</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
       <PathWithFileName>..\..\STemWin_Task\MainTask.c</PathWithFileName>
