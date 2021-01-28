@@ -188,21 +188,20 @@ static void AppTaskCreate(void)
 
 static void DataProcess_Task(void *parameter)
 {
-    
+
     while (1)
     {
         /* 采样率 */
         if (Key_Scan(KEY1_GPIO_PORT, KEY1_GPIO_PIN) == KEY_ON)
         {
-            
+            printf("Key1ON\n");
         }
 
-        /* DAC频率 */
         if (Key_Scan(KEY2_GPIO_PORT, KEY2_GPIO_PIN) == KEY_ON)
         {
-            
+            printf("Key2ON\n");
         }
-        //DataToDisplay();
+
         vTaskDelay(20);
     }
 }

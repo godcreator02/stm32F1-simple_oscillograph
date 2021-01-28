@@ -16,6 +16,7 @@
   */ 
   
 #include "bsp_key.h"  
+#include "bsp_usart.h"
 
 /**
   * @brief  配置按键用到的I/O口
@@ -51,16 +52,64 @@ void Key_GPIO_Config(void)
  *		     GPIO_Pin：待读取的端口位 	
  * 输出  ：KEY_OFF(没按下按键)、KEY_ON（按下按键）
  */
+
+static uint8_t Key1Flag = 0;
+static uint8_t Key2Flag = 0;
+
 uint8_t Key_Scan(GPIO_TypeDef* GPIOx,uint16_t GPIO_Pin)
-{			
+{	
+	uint8_t* KeyFlag;
+
+	switch ((uint32_t)GPIOx)
+	{
+	case ((uint32_t)KEY1_GPIO_PORT):
+		switch (GPIO_Pin)
+		{
+		case KEY1_GPIO_PIN:
+			KeyFlag = &Key1Flag;
+			break;
+		
+		default:
+			printf("error: GPIO port pin not match\r\n");
+			return KEY_OFF;
+			
+		}
+		break;
+
+	case ((uint32_t)KEY2_GPIO_PORT):
+		switch (GPIO_Pin)
+		{
+		case KEY2_GPIO_PIN:
+			KeyFlag = &Key2Flag;
+			break;
+		
+		default:
+			printf("error: GPIO port pin not match\r\n");
+			return KEY_OFF;
+			
+		}
+		break;
+
+	default:
+		printf("error: key do not exist\r\n");
+		return KEY_OFF;
+	}
+
 	/*检测是否有按键按下 */
-	if(GPIO_ReadInputDataBit(GPIOx,GPIO_Pin) == KEY_ON )  
-	{	 
-		/*等待按键释放 */
-		while(GPIO_ReadInputDataBit(GPIOx,GPIO_Pin) == KEY_ON);   
-		return 	KEY_ON;	 
+	if( !(*KeyFlag) && (GPIO_ReadInputDataBit(GPIOx,GPIO_Pin) == KEY_ON ))  
+	{
+		*KeyFlag = 1;
+		return 	KEY_ON;	 		
+	}
+	else if( (*KeyFlag) && (GPIO_ReadInputDataBit(GPIOx,GPIO_Pin) == KEY_OFF))
+	{
+		*KeyFlag = 0;
+		return 	KEY_OFF;
 	}
 	else
+	{
 		return KEY_OFF;
+	}
+		
 }
 /*********************************************END OF FILE**********************/
