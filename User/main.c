@@ -111,7 +111,7 @@ int main(void)
     /* 创建AppTaskCreate任务 */
     xReturn = xTaskCreate((TaskFunction_t)AppTaskCreate,          /* 任务入口函数 */
                           (const char *)"AppTaskCreate",          /* 任务名字 */
-                          (uint16_t)512,                          /* 任务栈大小 */
+                          (uint16_t)256,                          /* 任务栈大小 */
                           (void *)NULL,                           /* 任务入口函数参数 */
                           (UBaseType_t)1,                         /* 任务的优先级 */
                           (TaskHandle_t *)&AppTaskCreate_Handle); /* 任务控制块指针 */
@@ -139,7 +139,7 @@ static void AppTaskCreate(void)
 
     xReturn = xTaskCreate((TaskFunction_t)DataProcess_Task,        /* 任务入口函数 */
                           (const char *)"DataProcess_Task",        /* 任务名称 */
-                          (uint16_t)256,                           /* 任务栈大小 */
+                          (uint16_t)128,                           /* 任务栈大小 */
                           (void *)NULL,                            /* 任务入口函数参数 */
                           (UBaseType_t)10,                         /* 任务的优先级 */
                           (TaskHandle_t)&DataProcess_Task_Handle); /* 任务控制块指针 */
@@ -148,18 +148,18 @@ static void AppTaskCreate(void)
 
     xReturn = xTaskCreate((TaskFunction_t)Touch_Task,        /* 任务入口函数 */
                           (const char *)"Touch_Task",        /* 任务名称 */
-                          (uint16_t)256,                     /* 任务栈大小 */
+                          (uint16_t)128,                     /* 任务栈大小 */
                           (void *)NULL,                      /* 任务入口函数参数 */
-                          (UBaseType_t)4,                    /* 任务的优先级 */
+                          (UBaseType_t)3,                    /* 任务的优先级 */
                           (TaskHandle_t)&Touch_Task_Handle); /* 任务控制块指针 */
     if (pdPASS == xReturn)
         printf("创建Touch_Task任务成功！\r\n");
 
     xReturn = xTaskCreate((TaskFunction_t)GUI_Task,        /* 任务入口函数 */
                           (const char *)"GUI_Task",        /* 任务名称 */
-                          (uint16_t)2048,                  /* 任务栈大小 */
+                          (uint16_t)512,                  /* 任务栈大小 */
                           (void *)NULL,                    /* 任务入口函数参数 */
-                          (UBaseType_t)3,                  /* 任务的优先级 */
+                          (UBaseType_t)4,                  /* 任务的优先级 */
                           (TaskHandle_t)&GUI_Task_Handle); /* 任务控制块指针 */
     if (pdPASS == xReturn)
         printf("创建GUI_Task任务成功！\r\n");

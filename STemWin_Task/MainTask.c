@@ -483,10 +483,12 @@ void MainTask(void) {
     //初始化结构体
     MY_Init();
 
+    WM_SetCreateFlags(WM_CF_MEMDEV);
     GUI_Init();
+    GUI_CURSOR_Show();
+
     WM_SetCallback(WM_HBKWIN, &_cbBkWindow);
-    //WM_SetCreateFlags(WM_CF_MEMDEV);  /* Use memory devices on all windows to avoid flicker */
- 
+
     TEXT_SetDefaultTextColor(GUI_DARKBLUE);
     TEXT_SetDefaultFont(&GUI_Font13B_1);
 
@@ -496,7 +498,7 @@ void MainTask(void) {
     while (1) {
         for (i = 0; i < GUI_COUNTOF(GraphWaveBuffer); i++)
         {
-            GraphWaveBuffer[i] = -(i + j) % 200;
+            GraphWaveBuffer[i] = -(i + j + 11) % 200;
         }
         j++;
 
