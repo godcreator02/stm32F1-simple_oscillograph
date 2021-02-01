@@ -737,6 +737,16 @@
               <FileType>1</FileType>
               <FilePath>..\..\STemWin_Task\Touch_calibration.c</FilePath>
             </File>
+            <File>
+              <FileName>DSO.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\STemWin_Task\DSO.c</FilePath>
+            </File>
+            <File>
+              <FileName>DataProcess.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\STemWin_Task\DataProcess.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

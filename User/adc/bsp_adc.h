@@ -25,7 +25,7 @@ extern __IO uint16_t ADC_ConvertedValue[ADC_DataSize];
 
 
 void ADCx_Init(void);
-
+void SetADCSampleRate(uint32_t SampleRate);
 
 #endif /* __ADC_H */
 

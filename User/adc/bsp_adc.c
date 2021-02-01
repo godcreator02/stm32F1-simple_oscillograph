@@ -162,6 +162,16 @@ static void ADCx_Mode_Config(void)
 }
 
 /**
+  * @brief  更改adc采样率
+  * @param  无
+  * @retval 无
+  */
+void SetADCSampleRate(uint32_t SampleRate)
+{
+	TIM_PrescalerConfig(TIM3, 6000000 / SampleRate - 1, TIM_PSCReloadMode_Immediate);
+}
+
+/**
   * @brief  ADC初始化
   * @param  无
   * @retval 无
@@ -171,5 +181,9 @@ void ADCx_Init(void)
 	ADCx_GPIO_Config();
 	ADCx_Mode_Config();
     TIM3_Config();
+	SetADCSampleRate(20000);
 }
+
+
+
 /*********************************************END OF FILE**********************/

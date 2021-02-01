@@ -20,12 +20,20 @@ Purpose     : Example demonstrating DIALOG and widgets
 ----------------------------------------------------------------------
 */
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <stddef.h>
+
 #include "GUI.h"
 #include "DIALOG.h"
 #include "DROPDOWN.h"
 
+#include "DSO.h"
+#include "MainTask.h"
+#include "./bsp_adc.h"
+
+// debug
+char chInput[512];
 
 /*********************************************************************
 *
@@ -43,65 +51,48 @@ Purpose     : Example demonstrating DIALOG and widgets
 #define GUI_ID_FrameGraph           (GUI_ID_USER + 0x01)
 
 #define ID_RightText_channel        (GUI_ID_USER + 0x10)
-#define ID_RightText_tbase        (GUI_ID_USER + 0x11)
+#define ID_RightText_tbase          (GUI_ID_USER + 0x11)
 
-typedef struct { I16 width, height, pointspace; } GRID;
-typedef struct { I16 x0, y0, xsize, ysize; } WIGET;
+#define ID_BUTTON_LEFT_MOVE         (GUI_ID_USER + 0x20)
+#define ID_BUTTON_RIGHT_MOVE        (GUI_ID_USER + 0x21)
+#define ID_BUTTON_X_LARGE           (GUI_ID_USER + 0x22)
+#define ID_BUTTON_X_SHRINK          (GUI_ID_USER + 0x23)
 
-static short GraphWaveBuffer[250];
+#define ID_BUTTON_TRIGGERUP         (GUI_ID_USER + 0x24)
+#define ID_BUTTON_TRIGGERDOWN       (GUI_ID_USER + 0x25)
 
-static GUI_RECT GraphRect = { 10, 20, 260, 220 };
+#define ID_BUTTON_Y_UP              (GUI_ID_USER + 0x26)
+#define ID_BUTTON_Y_DOWN            (GUI_ID_USER + 0x27)
+#define ID_BUTTON_Y_LARGE           (GUI_ID_USER + 0x28)
+#define ID_BUTTON_Y_SHRINK          (GUI_ID_USER + 0x29)
 
-//  文本框通用结构体
 
-typedef struct {
-    int Handle;
-    const char* stitle;
-    char* sinfo;
-    WIGET Text;
-    int CornerSize;
-    int Space;
-}TEXTSTRUCT;
+static GUI_RECT GraphRect = { 10, 20, 260, 220 };       //  波形显示bk上的位置
 
-//  右边的8个文本框的显示用全部东西
 
-#define     RIGHTTEXT_XSIZE             50
-#define     RIGHTTEXT_YSIZE             23
-#define     RIGHTTEXT_HALF_YSIZE        (int)(RIGHTTEXT_YSIZE / 2)
-#define     RIGHTTEXT_CSIZE             4
-#define     RIGHTTEXT_SPACE             1
-#define     RIGHTTEXT_MAXNUMS           8
+// 右边的文本框定义  ***************
 
-enum { channel, tbase, vbase, xpos, ypos, trlevel, mode, trmode };
 
-const char *_arighttext[] =
+const char* _aright_text_title[] =                  // 右边文本框标题，不变的
 {
-    "CHANNEL",
-    "TIMEBASE",
-    "V BASE",
-    "X POS",
-    "Y POS",
-    "TR LEVEL",
-    "MODE",
-    "TR MODE",
+    "CHANNEL", "TIMEBASE", "V BASE", "X POS", "Y POS", "TR LEVEL", "MODE", "TR MODE",
 };
 
-char* RightTextInfo[] =
+char RightTextInfo[][10] =                             // 右边文本框内容，会变的
 {
-    "CHA",
-    "100ms",
-    "1V",
-    "128ms",
-    "2.06V",
-    "103mv",
-    "DC",
-    "CHA-UP",
+    "CHA", "100ms", "1V", "128ms", "2.06V", "103mv", "DC", "CHA-UP",
 };
 
-static TEXTSTRUCT RightText[RIGHTTEXT_MAXNUMS] = {0};
+const char* _atimebase[] =
+{
+    "25us", "50us", "100us", "250us", "500us", "1ms", "2.5ms", "5ms", "10ms", "25ms", "50ms"
+};
 
+
+static TEXTSTRUCT RightText[RIGHTTEXT_MAXNUMS] = { 0 };                  /* 在后面初始化 */
+
+/* 画右边文本框的背景 */
 static GUI_POINT _TextBkBig[] = {
-
     {0                                      , 0},
     {RIGHTTEXT_XSIZE - RIGHTTEXT_CSIZE - 1  , 0},
     {RIGHTTEXT_XSIZE - 1                    , RIGHTTEXT_CSIZE - 1},
@@ -119,23 +110,50 @@ static GUI_POINT _TextBkSmall[] = {
     {RIGHTTEXT_SPACE                        , RIGHTTEXT_YSIZE - RIGHTTEXT_CSIZE - RIGHTTEXT_SPACE - 1}
 };
 
-// 正下方四个文本框显示用
+// 右边的文本框定义  -------------------
 
-#define     BOTTOMTEXT_XSIZE             82
-#define     BOTTOMTEXT_YSIZE             16
-#define     BOTTOMTEXT_SPACE             2
-#define     BOTTOMTEXT_MAXNUMS           3
 
-enum { vpp, freq, period, TBD };
+// 下方的文本框定义  *******************
 
-static TEXTSTRUCT BottomText[BOTTOMTEXT_MAXNUMS] = { 0 };
+static TEXTSTRUCT BottomText[BOTTOMTEXT_MAXNUMS] = { 0 };           /* 在后面初始化 */
 
-char* BottomTextInfo[] =
+char BottomTextInfo[][15] =
 {
     "Vp-p: 1.65V",
     "Freq: 10Hz",
     "Period: 10ms",
 };
+// 下方的文本框定义  --------------------
+
+// 上方文本框定义  **********************
+
+static TEXTSTRUCT UpText[UPTEXT_MAXNUMS] = { 0 };                   /* 在后面初始化 */
+char UpTextInfo[][10] =
+{
+    "T'D",
+    "TBD",
+    "200kSa/s",
+};
+// 上方文本框定义  ----------------------
+
+// 上方波形预览条定义 *******************
+short GraphPreBuffer[GRAPHPRE_XSIZE - 2] = { 0 };
+
+static GRAPHPREWIN_STRUCT GraphPreWin =                  /*波形预览初始化*/
+{
+    -1,
+    20,
+    50,
+    60,
+    {
+        .x0 = 70,
+        .y0 = 2,
+        .xsize = GRAPHPRE_XSIZE,
+        .ysize = GRAPHPRE_YSIZE,
+    }
+};
+// 上方波形预览条定义 --------------------
+
 
 /*******************************************************************
 *
@@ -143,12 +161,141 @@ char* BottomTextInfo[] =
 *
 ********************************************************************
 */
+
+
+/*********************************************************************
+*
+*       _cbGraphPreWin
+*/
+
+static void _cbGraphPreWin(WM_MESSAGE* pMsg) {
+    WM_HWIN hWin = pMsg->hWin;
+    GUI_RECT RECT;
+    WM_GetWindowRectEx(hWin, &RECT);
+
+    switch (pMsg->MsgId) {
+    case WM_PAINT:
+
+        GraphPreWin.TriggerPos = (I32)DSOShowParams.TriggerPos * 127 / WAVE_BUFF_SIZE;
+        GraphPreWin.CoverLength = 250 * 127 / WAVE_BUFF_SIZE;
+        GraphPreWin.StartPos = (I32)DSOShowParams.ShowStartPos * 127 / WAVE_BUFF_SIZE;
+
+        GUI_SetBkColor(0x040005);
+        GUI_Clear();
+
+        GUI_SetColor(GUI_WHITE);
+        GUI_DrawRoundedRect(0, 0, GRAPHPRE_XSIZE - 1, GRAPHPRE_YSIZE - 1, 2);
+
+        GUI_SetColor(GUI_RED);
+        //GUI_DrawGraph((signed short*)GraphPreBuffer, GUI_COUNTOF(GraphPreBuffer), 1, GraphPre.size.ysize -2);
+
+        // 画覆盖框和指针
+
+        //GUI_EnableAlpha(1);
+        //GUI_SetAlpha(64);
+        GUI_SetColor(GUI_BLUE);
+        GUI_FillRect(GraphPreWin.StartPos, 1, GraphPreWin.StartPos + GraphPreWin.CoverLength, GraphPreWin.size.ysize - 2);
+        //GUI_SetAlpha(0);
+        //GUI_EnableAlpha(0);
+
+
+        GUI_SetPenSize(2);
+        GUI_SetColor(GUI_YELLOW);
+        GUI_DrawLine(GraphPreWin.TriggerPos - 2, 1, GraphPreWin.TriggerPos + 2, 1);
+        GUI_DrawLine(GraphPreWin.TriggerPos, 1, GraphPreWin.TriggerPos, GraphPreWin.size.ysize - 2);
+        GUI_DrawLine(GraphPreWin.TriggerPos - 2, GraphPreWin.size.ysize - 3, GraphPreWin.TriggerPos + 2, GraphPreWin.size.ysize - 3);
+        GUI_SetPenSize(1);
+
+        break;
+    default:
+        WM_DefaultProc(pMsg);
+    }
+}
+
+
+
+/*********************************************************************
+*
+*       _cbUpText
+*/
+static void _cbUpText(WM_MESSAGE* pMsg) {
+    int i, up_textx = 0;
+    WM_HWIN hWin = pMsg->hWin;
+    GUI_RECT RECT;
+    WM_GetWindowRectEx(hWin, &RECT);
+
+    switch (pMsg->MsgId) {
+    case WM_PAINT:
+        for (i = 0; i < UPTEXT_MAXNUMS; i++)
+        {
+            if (hWin == UpText[i].Handle)
+            {
+                up_textx = i;
+            }
+        }
+
+        switch (DSOParams.TimeBaseGrade)
+        {
+        case 0:
+            sprintf(UpTextInfo[sps], "%dMSa/s", 1);
+            break;
+        case SPSMAXGRADE:
+            sprintf(UpTextInfo[sps], "%dSa/s", _tgrade[SPSMAXGRADE].SPS);
+            break;
+        default:
+            sprintf(UpTextInfo[sps], "%dkSa/s", _tgrade[DSOParams.TimeBaseGrade].SPS / 1000);
+            break;
+        }
+
+
+        GUI_SetFont(&GUI_Font13B_ASCII);
+        //GUI_DispDecAt(pMsg->hWin, 0, 0, 5);
+        switch (up_textx)
+        {
+        case status:
+            GUI_SetColor(GUI_YELLOW);
+            GUI_FillRoundedRect(0, 0, UPTEXT_L_XSIZE, UPTEXT_YSIZE, 2);
+
+            GUI_SetBkColor(GUI_YELLOW);
+            GUI_SetColor(GUI_BLACK);
+            GUI_DispStringHCenterAt(UpText[up_textx].sinfo, UPTEXT_L_XSIZE / 2, 0);
+            break;
+
+        case sps:
+            GUI_SetColor(GUI_YELLOW);
+            GUI_FillRoundedRect(0, 0, UPTEXT_R_XSIZE, UPTEXT_YSIZE, 2);
+
+            GUI_SetBkColor(GUI_YELLOW);
+            GUI_SetColor(GUI_BLACK);
+            GUI_DispStringHCenterAt(UpText[up_textx].sinfo, UPTEXT_R_XSIZE / 2 + 1, 0);
+            break;
+
+        case upTBD:
+            GUI_SetColor(GUI_GREEN);
+            GUI_FillRoundedRect(0, 0, UPTEXT_L_XSIZE, UPTEXT_YSIZE, 2);
+
+            GUI_SetBkColor(GUI_GREEN);
+            GUI_SetColor(GUI_BLACK);
+            GUI_DispStringHCenterAt(UpText[up_textx].sinfo, UPTEXT_L_XSIZE / 2 + 1, 0);
+            break;
+        default:
+            break;
+        }
+
+
+
+        break;
+    default:
+        WM_DefaultProc(pMsg);
+    }
+}
+
+
 /*********************************************************************
 *
 *       _cbBottomText
 */
 static void _cbBottomText(WM_MESSAGE* pMsg) {
-    char* sinfo;
     int i, bottom_textx = 0;
     WM_HWIN hWin = pMsg->hWin;
     GUI_RECT RECT;
@@ -170,10 +317,8 @@ static void _cbBottomText(WM_MESSAGE* pMsg) {
         {
         case vpp: case period:
             GUI_SetColor(GUI_YELLOW);
-            
             GUI_FillRoundedRect(0, 0, BOTTOMTEXT_XSIZE, BOTTOMTEXT_YSIZE, 2);
-            GUI_AA_FillRoundedRectEx(&RECT,2);
-            
+
             GUI_SetBkColor(GUI_YELLOW);
             GUI_SetColor(GUI_BLACK);
             GUI_DispStringAt(BottomText[bottom_textx].sinfo, 5, 0);
@@ -192,7 +337,7 @@ static void _cbBottomText(WM_MESSAGE* pMsg) {
             break;
         }
 
-        
+
 
         break;
     default:
@@ -206,8 +351,8 @@ static void _cbBottomText(WM_MESSAGE* pMsg) {
 */
 static void _cbRightText(WM_MESSAGE* pMsg) {
     char stitle[10];
-    char* sinfo;
     int i, right_textx = 0;
+    I16 thistimebase;
     WM_HWIN hWin = pMsg->hWin;
 
     switch (pMsg->MsgId) {
@@ -219,6 +364,31 @@ static void _cbRightText(WM_MESSAGE* pMsg) {
                 right_textx = i;
             }
         }
+
+        thistimebase = _tgrade[DSOParams.TimeBaseGrade].TIMEBASE;
+        
+        if (DSOParams.TimeBaseGrade < 5) 
+        {
+            sprintf(RightTextInfo[tbase], "%dus", thistimebase * 5);
+            sprintf(RightTextInfo[xpos], "%dus", DSOParams.XPos * 5);
+        }   
+        else
+        {
+            sprintf(RightTextInfo[tbase], "%dms", thistimebase * 5 / 1000);
+            sprintf(RightTextInfo[xpos], "%.2fms", (float)(DSOParams.XPos) * 5 / 1000);
+        }
+        
+        if(DSOParams.TriggerLevel > 1241)
+            sprintf(RightTextInfo[trlevel], "%.2fV", ((float)DSOParams.TriggerLevel/ 1.2412 / 1000 ));
+        else
+            sprintf(RightTextInfo[trlevel], "%dmV", (I16)(DSOParams.TriggerLevel / 1.2412));
+
+        sprintf(RightTextInfo[vbase], "%dmV", _vgrade[DSOParams.VoltageBaseGrade]);
+        sprintf(RightTextInfo[ypos], "%d", DSOParams.YPos);
+
+        
+
+
 
         TEXT_GetText(hWin, stitle, 10);
         //GUI_DispDecAt(pMsg->hWin, 0, 0, 5);
@@ -235,6 +405,7 @@ static void _cbRightText(WM_MESSAGE* pMsg) {
             GUI_SetBkColor(GUI_YELLOW);
             GUI_SetColor(GUI_BLACK);
             GUI_DispStringHCenterAt(RightText[right_textx].stitle, RightText[right_textx].Text.xsize / 2, 2);
+
             break;
 
         case tbase: case xpos: case trlevel: case trmode:
@@ -248,9 +419,8 @@ static void _cbRightText(WM_MESSAGE* pMsg) {
             GUI_SetBkColor(GUI_GREEN);
             GUI_SetColor(GUI_BLACK);
             GUI_DispStringHCenterAt(stitle, RightText[right_textx].Text.xsize / 2, 2);
-            break;
 
-        
+            break;
         default:
             break;
         }
@@ -349,7 +519,8 @@ static void Draw_GraphBk(void)
 static void Draw_Graph(void)
 {
     GUI_SetColor(GUI_YELLOW);
-    GUI_DrawGraph((signed short*)GraphWaveBuffer, GUI_COUNTOF(GraphWaveBuffer), GraphRect.x0, GraphRect.y1);
+    GUI_DrawGraph((signed short*)GraphShowBuffer, GUI_COUNTOF(GraphShowBuffer), GraphRect.x0, GraphRect.y1);
+
 }
 
 /*********************************************************************
@@ -357,9 +528,10 @@ static void Draw_Graph(void)
 *       _cbBkWindow
 */
 static void _cbBkWindow(WM_MESSAGE* pMsg) {
+    I16 lasttimebase;
+    I16 thistimebase;
+
     int NCode, Id;
-    WM_HWIN hEdit0, hEdit1, hEdit2, hEdit3, hListBox, hDropd0, hDropd1, hGraph, hText;
-    WM_HWIN hWin = pMsg->hWin;
     switch (pMsg->MsgId) {
 
     case WM_PAINT:
@@ -368,20 +540,16 @@ static void _cbBkWindow(WM_MESSAGE* pMsg) {
         GUI_Clear();
         Draw_GraphBk();
         Draw_Graph();
-        
-        
-        hText = WM_GetDialogItem(hWin, ID_RightText_channel);
-        GUI_DispDecAt(hText, 0, 0, 5);
-        GUI_DispDecAt(ID_RightText_channel, 0, 10, 5);
+
         break;
 
     case WM_KEY:
         switch (((WM_KEY_INFO*)(pMsg->Data.p))->Key) {
         case GUI_KEY_ESCAPE:
-            
+
             break;
         case GUI_KEY_ENTER:
-            
+
             break;
         }
         break;
@@ -390,12 +558,97 @@ static void _cbBkWindow(WM_MESSAGE* pMsg) {
         NCode = pMsg->Data.v;               /* Notification code */
         switch (NCode) {
         case WM_NOTIFICATION_RELEASED:    /* React only if released */
-            if (Id == GUI_ID_OK) {          /* OK Button */
+            switch (Id)
+            {
+            case ID_BUTTON_X_LARGE:
+                if (DSOParams.TimeBaseGrade < SPSMAXGRADE)
+                {
+                    lasttimebase = _tgrade[DSOParams.TimeBaseGrade].TIMEBASE;
+                    DSOParams.TimeBaseGrade++;
+                    thistimebase = _tgrade[DSOParams.TimeBaseGrade].TIMEBASE;
+                    
+                    SetADCSampleRate(_tgrade[DSOParams.TimeBaseGrade].SPS);
+                    
+                    DSOShowParams.XBufPos = (DSOShowParams.XBufPos * ((float)lasttimebase / (float)thistimebase));
+
+                    WM_InvalidateWindow(UpText[sps].Handle);
+                    WM_InvalidateWindow(RightText[tbase].Handle);
+                    WM_InvalidateWindow(RightText[xpos].Handle);
+                }
+
+                break;
+            case ID_BUTTON_X_SHRINK:
+                if (DSOParams.TimeBaseGrade > 0)
+                {
+                    lasttimebase = _tgrade[DSOParams.TimeBaseGrade].TIMEBASE;
+                    DSOParams.TimeBaseGrade--;
+                    thistimebase = _tgrade[DSOParams.TimeBaseGrade].TIMEBASE;
+
+                    SetADCSampleRate(_tgrade[DSOParams.TimeBaseGrade].SPS);
+
+                    DSOShowParams.XBufPos = (DSOShowParams.XBufPos * (lasttimebase / thistimebase));
+                   
+                    WM_InvalidateWindow(UpText[sps].Handle);
+                    WM_InvalidateWindow(RightText[tbase].Handle);
+                    WM_InvalidateWindow(RightText[xpos].Handle);
+                }
+
+                break;
+            case ID_BUTTON_LEFT_MOVE:
+                thistimebase = _tgrade[DSOParams.TimeBaseGrade].TIMEBASE;
+                DSOParams.XPos += (thistimebase / POINTS_ONE_MOVE);
+                DSOShowParams.XBufPos += POINTS_ONE_MOVE;
+
+                WM_InvalidateWindow(RightText[xpos].Handle);
+               
+                break;
+            case ID_BUTTON_RIGHT_MOVE:
+                thistimebase = _tgrade[DSOParams.TimeBaseGrade].TIMEBASE;
+                DSOParams.XPos -= (thistimebase / POINTS_ONE_MOVE);
+                DSOShowParams.XBufPos -= POINTS_ONE_MOVE;
+
+                WM_InvalidateWindow(RightText[xpos].Handle);
+
+                break;
+
+            case ID_BUTTON_TRIGGERUP:
+                DSOParams.TriggerLevel += 10;
+                WM_InvalidateWindow(RightText[trlevel].Handle);
+                break;
+
+            case ID_BUTTON_TRIGGERDOWN:
+                DSOParams.TriggerLevel -= 10;
+                WM_InvalidateWindow(RightText[trlevel].Handle);
+                break;
+
+            case ID_BUTTON_Y_UP:
+                DSOParams.YPos += 100;
+                WM_InvalidateWindow(RightText[ypos].Handle);
+                break;
+
+            case ID_BUTTON_Y_DOWN:
+                DSOParams.YPos -= 100;
+                WM_InvalidateWindow(RightText[ypos].Handle);
+                break;
+
+            case ID_BUTTON_Y_LARGE:
+                if (++DSOParams.VoltageBaseGrade > VOLTAGEMAXGRADE)
+                    DSOParams.VoltageBaseGrade--;
+
+                WM_InvalidateWindow(RightText[vbase].Handle);
+                break;
                 
+            case ID_BUTTON_Y_SHRINK:
+                if (--DSOParams.VoltageBaseGrade < 0)
+                    DSOParams.VoltageBaseGrade++;
+
+                WM_InvalidateWindow(RightText[vbase].Handle);
+                break;
+
+            default:
+                break;
             }
-            if (Id == GUI_ID_CANCEL) {      /* Cancel Button */
-                
-            }
+
             break;
         }
         break;
@@ -404,14 +657,14 @@ static void _cbBkWindow(WM_MESSAGE* pMsg) {
     }
 }
 
-void CreateAllWigets(void) 
+void CreateAllWigets(void)
 {
     WM_HWIN hWin;
     int i;
 
-    for (i = 0; i < RIGHTTEXT_MAXNUMS; i++) 
+    for (i = 0; i < RIGHTTEXT_MAXNUMS; i++)
     {
-        hWin = TEXT_CreateEx(RightText[i].Text.x0, RightText[i].Text.y0, RIGHTTEXT_XSIZE, RIGHTTEXT_YSIZE, WM_HBKWIN, WM_CF_SHOW, 0, 0, _arighttext[i]);
+        hWin = TEXT_CreateEx(RightText[i].Text.x0, RightText[i].Text.y0, RIGHTTEXT_XSIZE, RIGHTTEXT_YSIZE, WM_HBKWIN, WM_CF_SHOW, 0, 0, _aright_text_title[i]);
         WM_SetCallback(hWin, _cbRightText);
         RightText[i].Handle = hWin;
     }
@@ -422,27 +675,63 @@ void CreateAllWigets(void)
         WM_SetCallback(hWin, _cbBottomText);
         BottomText[i].Handle = hWin;
     }
-  
-    hWin = TEXT_CreateEx(10, 55, 48, 15, WM_HBKWIN, WM_CF_SHOW, 0, 0, "LText");
 
-    hWin = BUTTON_CreateEx(100, 5, 60, 20, WM_HBKWIN, WM_CF_SHOW, GUI_ID_OK, 0);
-    BUTTON_SetText(hWin, "OK");
+    for (i = 0; i < UPTEXT_MAXNUMS; i++)
+    {
+        hWin = TEXT_CreateEx(UpText[i].Text.x0, UpText[i].Text.y0, UpText[i].Text.xsize, UPTEXT_YSIZE, WM_HBKWIN, WM_CF_SHOW, 0, 0, NULL);
+        WM_SetCallback(hWin, _cbUpText);
+        UpText[i].Handle = hWin;
+    }
 
-    hWin = BUTTON_CreateEx(100, 30, 60, 20, WM_HBKWIN, WM_CF_SHOW, GUI_ID_CANCEL, 0);
-    BUTTON_SetText(hWin, "CANSEL");
+
+    // 用文本框控件代替窗口控件，因为用不到窗口控件的功能
+    hWin = TEXT_CreateEx(GraphPreWin.size.x0, GraphPreWin.size.y0, GraphPreWin.size.xsize, GraphPreWin.size.ysize, WM_HBKWIN, WM_CF_SHOW, 0, 0, NULL);
+    WM_SetCallback(hWin, _cbGraphPreWin);
+    GraphPreWin.Handle = hWin;
+
+
+    hWin = BUTTON_CreateEx(240, 20, 20, 20, WM_HBKWIN, WM_CF_SHOW, 0, ID_BUTTON_X_LARGE);
+    BUTTON_SetText(hWin, "L");
+
+    hWin = BUTTON_CreateEx(240, 40, 20, 20, WM_HBKWIN, WM_CF_SHOW, 0, ID_BUTTON_X_SHRINK);
+    BUTTON_SetText(hWin, "S");
+
+    hWin = BUTTON_CreateEx(220, 20, 20, 20, WM_HBKWIN, WM_CF_SHOW, 0, ID_BUTTON_LEFT_MOVE);
+    BUTTON_SetText(hWin, "l");
+
+    hWin = BUTTON_CreateEx(220, 40, 20, 20, WM_HBKWIN, WM_CF_SHOW, 0, ID_BUTTON_RIGHT_MOVE);
+    BUTTON_SetText(hWin, "r");
+
+    hWin = BUTTON_CreateEx(200, 20, 20, 20, WM_HBKWIN, WM_CF_SHOW, 0, ID_BUTTON_TRIGGERUP);
+    BUTTON_SetText(hWin, "tu");
+
+    hWin = BUTTON_CreateEx(200, 40, 20, 20, WM_HBKWIN, WM_CF_SHOW, 0, ID_BUTTON_TRIGGERDOWN);
+    BUTTON_SetText(hWin, "td");
+
+    hWin = BUTTON_CreateEx(180, 20, 20, 20, WM_HBKWIN, WM_CF_SHOW, 0, ID_BUTTON_Y_LARGE);
+    BUTTON_SetText(hWin, "yL");
+
+    hWin = BUTTON_CreateEx(180, 40, 20, 20, WM_HBKWIN, WM_CF_SHOW, 0, ID_BUTTON_Y_SHRINK);
+    BUTTON_SetText(hWin, "yS");
+
+    hWin = BUTTON_CreateEx(160, 20, 20, 20, WM_HBKWIN, WM_CF_SHOW, 0, ID_BUTTON_Y_UP);
+    BUTTON_SetText(hWin, "yu");
+
+    hWin = BUTTON_CreateEx(160, 40, 20, 20, WM_HBKWIN, WM_CF_SHOW, 0, ID_BUTTON_Y_DOWN);
+    BUTTON_SetText(hWin, "yd");
 }
 
-void MY_Init(void) 
+static void MY_Init(void)
 {
     int i;
 
     //右边八个显示的初始化
-    for (i = 0; i < RIGHTTEXT_MAXNUMS; i++) 
+    for (i = 0; i < RIGHTTEXT_MAXNUMS; i++)
     {
         RightText[i].CornerSize = RIGHTTEXT_CSIZE;
         RightText[i].Handle = -1;
         RightText[i].sinfo = RightTextInfo[i];
-        RightText[i].stitle = _arighttext[i];
+        RightText[i].stitle = _aright_text_title[i];
         RightText[i].Space = RIGHTTEXT_SPACE;
         RightText[i].Text.x0 = 265;
         RightText[i].Text.y0 = 21 + (RIGHTTEXT_YSIZE + 2) * i;
@@ -459,11 +748,53 @@ void MY_Init(void)
         BottomText[i].stitle = NULL;
         BottomText[i].Space = BOTTOMTEXT_SPACE;
         BottomText[i].Text.x0 = 10 + (BOTTOMTEXT_XSIZE + 2) * i;
-        BottomText[i].Text.y0 = 222 ;
+        BottomText[i].Text.y0 = 222;
         BottomText[i].Text.xsize = BOTTOMTEXT_XSIZE;
         BottomText[i].Text.ysize = BOTTOMTEXT_YSIZE;
     }
 
+    //上面两个文本初始化
+    for (i = 0; i < UPTEXT_MAXNUMS; i++)
+    {
+        if (i != 2)
+        {
+            UpText[i].Text.x0 = 10 + (UPTEXT_L_XSIZE + 2) * i;
+            UpText[i].Text.xsize = UPTEXT_L_XSIZE;
+        }
+        else
+        {
+            UpText[i].Text.x0 = 259 - UPTEXT_R_XSIZE;
+            UpText[i].Text.xsize = UPTEXT_R_XSIZE;
+        }
+
+
+        UpText[i].CornerSize = 0;
+        UpText[i].Handle = -1;
+        UpText[i].sinfo = UpTextInfo[i];
+        UpText[i].stitle = NULL;
+        UpText[i].Space = UPTEXT_SPACE;
+        UpText[i].Text.y0 = 2;
+        UpText[i].Text.ysize = UPTEXT_YSIZE;
+    }
+
+}
+
+
+
+/*  函数:  将数据从WaveBuff拷贝到ShowBuff
+*   参数： 无
+*   返回值： 无
+*/
+static void CopyToShowBuffer(void)
+{
+    int i, j;
+
+
+    for (i = 0, j = DSOShowParams.ShowStartPos; i < SHOW_BUFF_SIZE; i++, j++)
+    {
+        GraphShowBuffer[i] = - ((WaveBuffer[j] + DSOParams.YPos) 
+                               / (NUMS_PER_mV / 25 * _vgrade[DSOParams.VoltageBaseGrade]));
+    }
 }
 
 /*********************************************************************
@@ -477,17 +808,15 @@ void MY_Init(void)
 *       MainTask
 */
 void MainTask(void) {
-
-    int i = 0, j = 0;
+    I32 i = 0, j = 0;
 
     //初始化结构体
     MY_Init();
 
     WM_SetCreateFlags(WM_CF_MEMDEV);
     GUI_Init();
-    GUI_CURSOR_Show();
-
     WM_SetCallback(WM_HBKWIN, &_cbBkWindow);
+    //WM_SetCreateFlags(WM_CF_MEMDEV);  /* Use memory devices on all windows to avoid flicker */
 
     TEXT_SetDefaultTextColor(GUI_DARKBLUE);
     TEXT_SetDefaultFont(&GUI_Font13B_1);
@@ -496,16 +825,40 @@ void MainTask(void) {
     CreateAllWigets();
 
     while (1) {
-        for (i = 0; i < GUI_COUNTOF(GraphWaveBuffer); i++)
-        {
-            GraphWaveBuffer[i] = -(i + j + 11) % 200;
-        }
-        j++;
+
+        CopyDataToWaveBuff();
+        CalShowStartPos();
+        CopyToShowBuffer();
 
         WM_InvalidateRect(WM_HBKWIN, &GraphRect);
+        WM_InvalidateWindow(GraphPreWin.Handle);
+
         GUI_Delay(100);
-        
+
     }
 }
 
+
+I16 GetTextHandle(I8 Position, I8 Index)
+{
+    switch (Position)
+    {
+    case R:
+        return RightText[Index].Handle;
+
+    case B:
+        return BottomText[Index].Handle;
+    
+    case U:
+        return UpText[Index].Handle;
+
+    
+    default:
+        break;
+    }
+    return -1;
+
+    
+
+}
 /*************************** End of file ****************************/
