@@ -10,9 +10,13 @@ typedef struct
 	uint8_t KeyPhysic;
  	uint8_t KeyONCounts;
  	uint8_t KeyOFFCounts;
+
+	uint8_t MulClickCounts;
+	uint8_t MulClickFlag;
+
 }KEY_TypeDef;
 
-
+#define    KEY_NUMS					2
 
 //  Òý½Å¶¨Òå
 #if 1
@@ -40,12 +44,21 @@ typedef struct
 	*/
 #define    	KEY_OFF	   		0
 #define    	KEY_ON	   	 	1
-#define    	KEY_HOLD		2
-#define		KEY_IDLE		3
+#define    	KEY_HOLD		7
+
+#define    	KEY_1ClICK				KEY_ON
+#define    	KEY_2ClICK				2
+#define    	KEY_3ClICK				3
+#define    	KEY_4ClICK				4
+#define    	KEY_5ClICK				5
+#define     KEY_MAX_MULCLICK		KEY_5ClICK
+
+#define		KEY_IDLE		8
 #define		KEY_ERROR		10
 
-#define		HOLD_COUNTS			50
-#define 	SHAKES_COUNTS		5
+#define		HOLD_COUNTS					50*2
+#define 	SHAKES_COUNTS				4*2
+#define		MULTIPLE_CLICK_COUNTS		10*2
 
 void Key_GPIO_Config(void);
 uint8_t Key_Scan(GPIO_TypeDef* GPIOx,uint16_t GPIO_Pin);

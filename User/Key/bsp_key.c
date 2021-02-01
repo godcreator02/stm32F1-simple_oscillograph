@@ -52,10 +52,14 @@ void Key_GPIO_Config(void)
  *		     GPIO_Pin：待读取的端口位 	
  * 输出  ：KEY_OFF(没按下按键)、KEY_ON（按下按键）
  */
+static const uint8_t MulClickState[] = 
+{
+	KEY_1ClICK, KEY_2ClICK, KEY_3ClICK,
+};
 
-static KEY_TypeDef Key[2] =
-	{{KEY_OFF, KEY_OFF, 0, 0},
-	 {KEY_OFF, KEY_OFF, 0, 0}};
+static KEY_TypeDef Key[KEY_NUMS] =
+	{{KEY_OFF, KEY_OFF, 0, 0, 0, KEY_1ClICK},
+	 {KEY_OFF, KEY_OFF, 0, 0, 0, KEY_1ClICK}};
 
 uint8_t Key_Scan(GPIO_TypeDef *GPIOx, uint16_t GPIO_Pin)
 {
@@ -99,6 +103,8 @@ uint8_t Key_Scan(GPIO_TypeDef *GPIOx, uint16_t GPIO_Pin)
 
 	KeyTemp->KeyPhysic = GPIO_ReadInputDataBit(GPIOx, GPIO_Pin);
 
+
+
 	/* 检测按下、松开、长按 */
 	switch (KeyTemp->KeyLogic)
 	{
@@ -115,15 +121,19 @@ uint8_t Key_Scan(GPIO_TypeDef *GPIOx, uint16_t GPIO_Pin)
 				KeyTemp->KeyLogic = KEY_HOLD;
 				return KEY_HOLD;
 			}
+
+
 			return KEY_IDLE;
 
 		//（1，0）中对关闭计数累加直到切换至逻辑关闭状态
 		case KEY_OFF:
 			KeyTemp->KeyOFFCounts++;
+			
 			if (KeyTemp->KeyOFFCounts >= SHAKES_COUNTS)
 			{
 				KeyTemp->KeyLogic = KEY_OFF;
 				KeyTemp->KeyOFFCounts = 0;
+				
 				return KEY_OFF;
 			}
 			return KEY_IDLE;
@@ -140,16 +150,44 @@ uint8_t Key_Scan(GPIO_TypeDef *GPIOx, uint16_t GPIO_Pin)
 			(KeyTemp->KeyONCounts)++;
 			if (KeyTemp->KeyONCounts >= SHAKES_COUNTS)
 			{
-				KeyTemp->KeyLogic = KEY_ON;
+				//KeyTemp->KeyLogic = KEY_ON;
+				KeyTemp->KeyLogic = KEY_ON;			
 				KeyTemp->KeyONCounts = 0;
 
-				return KEY_ON;
+				if(KeyTemp->MulClickFlag == KEY_1ClICK)
+				{
+					KeyTemp->MulClickFlag = KEY_2ClICK;  	//预备双击状态
+					return KEY_ON;
+				}
+				else
+				{
+					if(KeyTemp->MulClickFlag != KEY_MAX_MULCLICK)
+					{
+						KeyTemp->MulClickFlag++;
+						KeyTemp->MulClickCounts = 0;
+						return (KeyTemp->MulClickFlag - 1);
+					}
+					else
+					{
+						KeyTemp->MulClickFlag = KEY_1ClICK;
+						return KEY_MAX_MULCLICK;
+					}	
+				}				
 			}
 			return KEY_IDLE;
 
-		//（0，0）中将开启计数清零
+		//（0，0）中将开启计数清零，对多击计数
 		case KEY_OFF:
 			(KeyTemp->KeyONCounts) = 0;
+			if(KeyTemp->MulClickFlag != KEY_1ClICK)
+			{
+				if(KeyTemp->MulClickCounts++ > MULTIPLE_CLICK_COUNTS) 	//超过多击最大间隔时间，关闭多击状态
+				{
+					KeyTemp->MulClickCounts = 0;
+					KeyTemp->MulClickFlag = KEY_1ClICK;				
+				}
+			}
+			
 			return KEY_IDLE;
 		default:
 			break;
@@ -177,10 +215,10 @@ uint8_t Key_Scan(GPIO_TypeDef *GPIOx, uint16_t GPIO_Pin)
 			break;
 		}
 
+	
 	default:
 		break;
 	}
-
 	return KEY_ERROR;
 }
 /*********************************************END OF FILE**********************/

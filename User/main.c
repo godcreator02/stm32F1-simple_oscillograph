@@ -84,7 +84,7 @@ int8_t Frq_Select = 4;
 */
 static void AppTaskCreate(void); /* 用于创建任务 */
 
-static void DataProcess_Task(void *parameter); /* DataProcess_Task */
+static void KeyScan_Task(void *parameter); /* DataProcess_Task */
 static void GUI_Task(void *parameter);         /* GUI_Task任务实现 */
 static void Touch_Task(void *parameter);
 static void CPU_Task(void *pvParameters); /* CPU_Task任务实现 */
@@ -137,7 +137,7 @@ static void AppTaskCreate(void)
 
     taskENTER_CRITICAL(); //进入临界区
 
-    xReturn = xTaskCreate((TaskFunction_t)DataProcess_Task,        /* 任务入口函数 */
+    xReturn = xTaskCreate((TaskFunction_t)KeyScan_Task,        /* 任务入口函数 */
                           (const char *)"DataProcess_Task",        /* 任务名称 */
                           (uint16_t)128,                           /* 任务栈大小 */
                           (void *)NULL,                            /* 任务入口函数参数 */
@@ -186,8 +186,9 @@ static void AppTaskCreate(void)
   */
 
 
-static void DataProcess_Task(void *parameter)
+static void KeyScan_Task(void *parameter)
 {
+    uint8_t i;
 
     while (1)
     {
@@ -200,9 +201,27 @@ static void DataProcess_Task(void *parameter)
         case KEY_HOLD:
             printf("Key1HOLD\n");
             break;
-        case KEY_OFF:
-            printf("Key1OFF\n");
+
+        case KEY_2ClICK:
+            printf("Key1_222222click\n");
             break;
+
+        case KEY_3ClICK:
+            printf("Key1_333333click\n");
+            break;
+
+        case KEY_4ClICK:
+            printf("Key1_444444click\n");
+            break;
+        
+        case KEY_5ClICK:
+            printf("Key1_555555click\n");
+            break;
+
+        case KEY_OFF:
+            printf("\t\tKey1OFF\n");
+            break;
+        
         case KEY_ERROR:
             printf("error\n");
             break;
@@ -220,6 +239,10 @@ static void DataProcess_Task(void *parameter)
         case KEY_HOLD:
             printf("Key2HOLD\n");
             break;
+
+        case KEY_2ClICK:
+            printf("Key2_2click\n");
+            break;
         
         case KEY_OFF:
             printf("Key2OFF\n");
@@ -232,8 +255,9 @@ static void DataProcess_Task(void *parameter)
             break;
         }
         
-
-        vTaskDelay(20);
+        
+        
+        vTaskDelay(10);
     }
 }
 
@@ -264,7 +288,8 @@ static void GUI_Task(void *parameter)
 
     while (1)
     {
-        MainTask();
+        //MainTask();
+        vTaskDelay(10000);
     }
 }
 
