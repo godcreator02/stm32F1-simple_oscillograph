@@ -118,7 +118,7 @@ static TEXTSTRUCT BottomText[BOTTOMTEXT_MAXNUMS] = { 0 };           /* ÔÚºóÃæ³õÊ
 char BottomTextInfo[][15] =
 {
     "Vp-p: 1.65V",
-    "Freq: 10Hz",
+    "F: 10Hz",
     "Min: 100mv",
 };
 // ÏÂ·½µÄÎÄ±¾¿ò¶¨Òå  --------------------
@@ -126,7 +126,7 @@ char BottomTextInfo[][15] =
 // ÉÏ·½ÎÄ±¾¿ò¶¨Òå  **********************
 
 static TEXTSTRUCT UpText[UPTEXT_MAXNUMS] = { 0 };                   /* ÔÚºóÃæ³õÊ¼»¯ */
-char UpTextInfo[][10] =
+char UpTextInfo[][12] =
 {
     "T'D",
     "TBD",
@@ -162,7 +162,27 @@ static WM_HTIMER hTimer = -1;
 *
 ********************************************************************
 */
+/*********************************************************************
+*
+*       _cbDACWin
+*/
 
+static void _cbDACWin(WM_MESSAGE* pMsg) {
+    WM_HWIN hWin = pMsg->hWin;
+    GUI_RECT RECT;
+    WM_GetWindowRectEx(hWin, &RECT);
+
+    switch (pMsg->MsgId) {
+    case WM_PAINT:
+        GUI_SetBkColor(GUI_BLACK);
+        GUI_SetColor(GUI_WHITE);
+        GUI_DispDecAt(_DACgrade[DACParams.DACFreqGrade], 0, 0, 6);
+
+        break;
+    default:
+        WM_DefaultProc(pMsg);
+    }
+}
 
 /*********************************************************************
 *
@@ -323,20 +343,28 @@ static void _cbBottomText(WM_MESSAGE* pMsg) {
 
         if(WaveParams.MinValue < 1241)
         {
-            sprintf(BottomTextInfo[minvalue], "Vp-p: %dmV", (I16)((float)WaveParams.MinValue / 1.2412121212));
+            sprintf(BottomTextInfo[minvalue], "Min: %dmV", (I16)((float)WaveParams.MinValue / 1.2412121212));
         }
         else
         {
-            sprintf(BottomTextInfo[minvalue], "Vp-p: %.2fV", (float)WaveParams.MinValue / 1.2412121212 / 1000);
+            sprintf(BottomTextInfo[minvalue], "Min: %.2fV", (float)WaveParams.MinValue / 1.2412121212 / 1000);
+        }
+
+        if(WaveParams.Freq > 1000)
+        {
+            sprintf(BottomTextInfo[freq], "F: %.2lfkHz", WaveParams.Freq / 1000);
+        }
+        else
+        {
+            sprintf(BottomTextInfo[freq], "F: %.1lfHz", WaveParams.Freq);
         }
         
-
 
         GUI_SetFont(&GUI_Font13B_ASCII);
         //GUI_DispDecAt(pMsg->hWin, 0, 0, 5);
         switch (bottom_textx)
         {
-        case vpp: case period:
+        case vpp: case minvalue:
             GUI_SetColor(GUI_YELLOW);
             GUI_FillRoundedRect(0, 0, BOTTOMTEXT_XSIZE, BOTTOMTEXT_YSIZE, 2);
 
@@ -586,6 +614,10 @@ static void _cbBkWindow(WM_MESSAGE* pMsg) {
         Draw_GraphBk();
         Draw_Graph();
 
+        GUI_SetBkColor(GUI_BLACK);
+        GUI_SetColor(GUI_WHITE);
+        GUI_DispDecAt(_DACgrade[DACParams.DACFreqGrade], 20, 40, 6);
+
         break;
 
     case WM_KEY:
@@ -646,6 +678,13 @@ void CreateAllWigets(void)
     hWin = TEXT_CreateEx(GraphPreWin.size.x0, GraphPreWin.size.y0, GraphPreWin.size.xsize, GraphPreWin.size.ysize, WM_HBKWIN, WM_CF_SHOW, 0, 0, NULL);
     WM_SetCallback(hWin, _cbGraphPreWin);
     GraphPreWin.Handle = hWin;
+
+    hWin = TEXT_CreateEx(GraphPreWin.size.x0, GraphPreWin.size.y0, GraphPreWin.size.xsize, GraphPreWin.size.ysize, WM_HBKWIN, WM_CF_SHOW, 0, 0, NULL);
+    WM_SetCallback(hWin, _cbGraphPreWin);
+    GraphPreWin.Handle = hWin;
+
+    hWin = TEXT_CreateEx(260, 220, 60, 20, WM_HBKWIN, WM_CF_SHOW, 0, 0, NULL);
+    WM_SetCallback(hWin, _cbDACWin);
 
 }
 
@@ -758,9 +797,12 @@ void MainTask(void) {
         CalShowStartPos();
         CopyToShowBuffer();
 
+        FFT_GetFreq(_tgrade[DSOParams.TimeBaseGrade].SPS);
+
         WM_InvalidateRect(WM_HBKWIN, &GraphRect);   //Ë¢ÐÂ²¨ÐÎ
         WM_InvalidateWindow(GraphPreWin.Handle);
         WM_InvalidateWindow(BottomText[vpp].Handle);
+        WM_InvalidateWindow(BottomText[freq].Handle);
 
         GUI_Delay(100);                             
 

@@ -1,8 +1,12 @@
 #include <stdio.h>
 #include "DSO.h"
 
-short WaveBuffer[WAVE_BUFF_SIZE];                         // 示波器2000的采样深度
-short GraphShowBuffer[SHOW_BUFF_SIZE];                     // 显示在屏幕上用的数组
+long WaveBuffer[WAVE_BUFF_SIZE];                         // 示波器2000的采样深度
+
+
+short GraphShowBuffer[SHOW_BUFF_SIZE];                   // 显示在屏幕上用的数组
+
+
 
 const DSO_MATCH_2PARAMS _tgrade[SPSMAXGRADE + 1] =
 {
@@ -22,6 +26,9 @@ const DSO_MATCH_2PARAMS _tgrade[SPSMAXGRADE + 1] =
 
 const I16 _vgrade[VOLTAGEMAXGRADE + 1] = { 1, 2, 5, 10, 20, 50, 100, 200, 500};
 //                                                                        8
+
+const I32 _DACgrade[DACMAXGRADE + 1] = {625, 1250, 2500, 12500, 62500 ,187500};
+//                                                 2
 DSOSHOWPARAMS DSOShowParams =
 {
     0, 0, 0, 1, 0
@@ -30,6 +37,11 @@ DSOSHOWPARAMS DSOShowParams =
 DSOPARAMS DSOParams =
 {
     SAMPLE_DEPTH, 1, 20, 0, 0, SPS_DEFAULT_GRADE, VOLTAGE_DEFAULT_GRADE,
+};
+
+DACPARAMS DACParams =
+{
+    DAC_DEFAULT_GRADE, 0,
 };
 
 

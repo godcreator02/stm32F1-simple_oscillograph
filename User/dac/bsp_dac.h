@@ -9,6 +9,7 @@
 
 
 void DAC_Mode_Init(void);
+uint32_t SetDACFreq(uint32_t Freq);
 
 
 #endif /* __DAC_H */

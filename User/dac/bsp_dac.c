@@ -18,14 +18,33 @@
 #include "./dac/bsp_dac.h"
 
 //正弦波单个周期的点数
-#define POINT_NUM 32
+#define POINT_NUM 128
 
 /* 波形数据 ---------------------------------------------------------*/
 const uint16_t Sine12bit[POINT_NUM] = {
-    2048, 2460, 2856, 3218, 3532, 3786, 3969, 4072,
-    4093, 4031, 3887, 3668, 3382, 3042, 2661, 2255,
-    1841, 1435, 1054, 714, 428, 209, 65, 3,
-    24, 127, 310, 564, 878, 1240, 1636, 2048};
+  2000,2073,2147,2220,2292,2364,
+  2435,2505,2574,2641,2707,2771,
+  2833,2893,2951,3007,3060,3111,
+  3159,3204,3247,3286,3322,3355,
+  3385,3412,3435,3455,3471,3483,
+  3492,3498,3499,3498,3492,3483,
+  3471,3455,3435,3412,3385,3355,
+  3322,3286,3247,3204,3159,3111,
+  3060,3007,2951,2893,2833,2771,
+  2707,2641,2574,2505,2435,2364,
+  2292,2220,2147,2073,2000,1926,
+  1852,1779,1707,1635,1564,1494,
+  1425,1358,1292,1228,1166,1106,
+  1048,992,939,888,840,795,
+  752,713,677,644,614,587,
+  564,544,528,516,507,501,
+  500,501,507,516,528,544,
+  564,587,614,644,677,713,
+  752,795,840,888,939,992,
+  1048,1106,1166,1228,1292,1358,
+  1425,1494,1564,1635,1707,1779,
+  1852,1926,
+};
 uint32_t DualSine12bit[POINT_NUM];
 
 /**
@@ -85,8 +104,8 @@ static void DAC_TIM_Config(void)
 
     /* TIM2基本定时器配置 */
     // TIM_TimeBaseStructInit(&TIM_TimeBaseStructure);
-    TIM_TimeBaseStructure.TIM_Period = (12 - 1);                 //定时周期
-    TIM_TimeBaseStructure.TIM_Prescaler = (50 - 1); //预分频 72M / (0+1) = 72M
+    TIM_TimeBaseStructure.TIM_Period = (3 - 1);                 //定时周期
+    TIM_TimeBaseStructure.TIM_Prescaler = (75 - 1); //预分频 72M / (0+1) = 72M
     TIM_TimeBaseStructure.TIM_ClockDivision = 0x0;               //时钟分频系数
     TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;  //向上计数模式
     TIM_TimeBaseInit(TIM2, &TIM_TimeBaseStructure);
@@ -149,3 +168,16 @@ void DAC_Mode_Init(void)
 
     DAC_DMA_Config();
 }
+
+
+/**
+* @brief  更改DAC频率
+* @param  无
+* @retval 无
+*/
+uint32_t SetDACFreq(uint32_t Freq)
+{
+    TIM_PrescalerConfig(TIM2, 187500 / Freq, TIM_PSCReloadMode_Immediate);
+    return Freq;
+}
+

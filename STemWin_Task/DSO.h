@@ -9,7 +9,7 @@ typedef struct { I16 x0, y0, xsize, ysize; } WIGET;
 
 #define     NUMS_PER_mV               ((double)4096 / (double)3300)
 
-#define     SAMPLE_DEPTH              2000          //  存储深度1000 * 2字节（short）
+#define     SAMPLE_DEPTH              2048          //  存储深度1000 * 2字节（short）
 #define     WAVE_BUFF_SIZE            (SAMPLE_DEPTH / 2)    
 #define     SHOW_BUFF_SIZE            250           //  一个屏幕显示250个点
 #define     MID_POS_WAVEBUF           (WAVE_BUFF_SIZE / 2)  
@@ -22,6 +22,9 @@ typedef struct { I16 x0, y0, xsize, ysize; } WIGET;
 
 #define     SPSMAXGRADE                10           // 采样率挡位 0-10,    以5us为单位1
 #define     SPS_DEFAULT_GRADE          5
+
+#define     DACMAXGRADE                5           // DAC挡位 0-5
+#define     DAC_DEFAULT_GRADE          0    
 
 
 #define     LEFT_LIMIT                MID_POS_SHOWBUF 
@@ -65,26 +68,35 @@ typedef struct {                //  波形参数
     I16 MinValue;
     I16 PPValue;
 
-    I32 Freq;
+    double Freq;
     I32 Period;
-
 }WAVEPARAMS;
 
+typedef struct {                //  DAC参数
+    I32 DACFreqGrade;
+    I8 DACMode;
+}DACPARAMS;
+
 // 外部申明
-extern short WaveBuffer[WAVE_BUFF_SIZE];
+extern long WaveBuffer[WAVE_BUFF_SIZE];
+extern long MagArray[WAVE_BUFF_SIZE/2];                         //fft幅值   
+
 extern short GraphShowBuffer[SHOW_BUFF_SIZE];
 
 extern DSOPARAMS DSOParams;
 extern DSOSHOWPARAMS DSOShowParams;
 extern WAVEPARAMS WaveParams;
+extern DACPARAMS DACParams;
 
 extern const DSO_MATCH_2PARAMS _tgrade[SPSMAXGRADE + 1];
 extern const I16 _vgrade[VOLTAGEMAXGRADE + 1];
+extern const I32 _DACgrade[DACMAXGRADE + 1];
 
 
 void CalShowStartPos(void);
 void CopyDataToWaveBuff(void);
 
+void FFT_GetFreq(I32 SPS);
 
 
 #endif  //end _DSO_H_

@@ -51,7 +51,7 @@ typedef struct
 #define    	KEY_3ClICK				3
 #define    	KEY_4ClICK				4
 #define    	KEY_5ClICK				5
-#define     KEY_MAX_MULCLICK		KEY_2ClICK
+#define     KEY_MAX_MULCLICK		KEY_3ClICK
 
 #define		KEY_IDLE		8
 #define		KEY_ERROR		10

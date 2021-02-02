@@ -20,7 +20,7 @@
 #define    ADC_DMA_CHANNEL               DMA1_Channel1
 
 
-#define    ADC_DataSize                  4096
+#define    ADC_DataSize                  2000
 extern __IO uint16_t ADC_ConvertedValue[ADC_DataSize];
 
 
