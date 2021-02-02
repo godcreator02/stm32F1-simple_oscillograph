@@ -31,7 +31,7 @@ const I32 _DACgrade[DACMAXGRADE + 1] = {625, 1250, 2500, 12500, 62500 ,187500};
 //                                                 2
 DSOSHOWPARAMS DSOShowParams =
 {
-    0, 0, 0, 1, 0
+    0, 0, 0, 0, 1, 0, 3
 };
 
 DSOPARAMS DSOParams =
@@ -91,7 +91,6 @@ I16 Trigger(char trmode, DSOPARAMS* DSOParams)
 void CalShowStartPos(void) 
 {
     DSOShowParams.TriggerPos = Trigger(0, &DSOParams);              // º∆À„¥•∑¢Œª÷√
-    int i, j = 0;
     int maxmovepoints;
     I16 xBufPos = DSOShowParams.XBufPos;
 

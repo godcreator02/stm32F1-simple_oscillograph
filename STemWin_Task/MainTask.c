@@ -53,18 +53,8 @@ char chInput[512];
 #define ID_RightText_channel        (GUI_ID_USER + 0x10)
 #define ID_RightText_tbase          (GUI_ID_USER + 0x11)
 
-#define ID_BUTTON_LEFT_MOVE         (GUI_ID_USER + 0x20)
-#define ID_BUTTON_RIGHT_MOVE        (GUI_ID_USER + 0x21)
-#define ID_BUTTON_X_LARGE           (GUI_ID_USER + 0x22)
-#define ID_BUTTON_X_SHRINK          (GUI_ID_USER + 0x23)
+#define ID_BUTTON_MODE_SWITCH       (GUI_ID_USER + 0x20)
 
-#define ID_BUTTON_TRIGGERUP         (GUI_ID_USER + 0x24)
-#define ID_BUTTON_TRIGGERDOWN       (GUI_ID_USER + 0x25)
-
-#define ID_BUTTON_Y_UP              (GUI_ID_USER + 0x26)
-#define ID_BUTTON_Y_DOWN            (GUI_ID_USER + 0x27)
-#define ID_BUTTON_Y_LARGE           (GUI_ID_USER + 0x28)
-#define ID_BUTTON_Y_SHRINK          (GUI_ID_USER + 0x29)
 
 
 static GUI_RECT GraphRect = { 10, 20, 260, 220 };       //  波形显示bk上的位置
@@ -446,6 +436,9 @@ static void _cbRightText(WM_MESSAGE* pMsg) {
         else
             sprintf(RightTextInfo[trlevel], "%dmV", (I16)(DSOParams.TriggerLevel / 1.2412));
             break;
+        case mode:
+            sprintf(RightTextInfo[mode], "%d->1", DSOShowParams.XExpan);
+            break;
         default:
             break;
         }
@@ -605,6 +598,7 @@ static void Draw_Graph(void)
 */
 static void _cbBkWindow(WM_MESSAGE* pMsg) {
     int NCode, Id;
+    WM_HWIN hButton;
     switch (pMsg->MsgId) {
 
     case WM_PAINT:
@@ -637,6 +631,19 @@ static void _cbBkWindow(WM_MESSAGE* pMsg) {
         case WM_NOTIFICATION_RELEASED:    /* React only if released */
             switch (Id)
             {
+            case ID_BUTTON_MODE_SWITCH:
+                hButton = pMsg->hWinSrc;
+                if(DSOShowParams.ShowMode == SHOW_FFT)
+                {
+                    BUTTON_SetText(hButton, "FFT");
+                    DSOShowParams.ShowMode = SHOW_WAVE;
+                }
+                else
+                {
+                    BUTTON_SetText(hButton, "WAVE");
+                    DSOShowParams.ShowMode = SHOW_FFT;
+                }
+                break;
             default:
                 break;    
             }
@@ -685,6 +692,9 @@ void CreateAllWigets(void)
 
     hWin = TEXT_CreateEx(260, 220, 60, 20, WM_HBKWIN, WM_CF_SHOW, 0, 0, NULL);
     WM_SetCallback(hWin, _cbDACWin);
+
+    hWin = BUTTON_CreateEx(260, 0, 60, 20, WM_HBKWIN, WM_CF_SHOW, 0, ID_BUTTON_MODE_SWITCH);
+    BUTTON_SetText(hWin, "FFT");
 
 }
 
@@ -755,14 +765,33 @@ static void MY_Init(void)
 */
 static void CopyToShowBuffer(void)
 {
-    int i, j;
-
-
-    for (i = 0, j = DSOShowParams.ShowStartPos; i < SHOW_BUFF_SIZE; i++, j++)
+    int i, j, k;
+    
+    if(DSOShowParams.ShowMode == SHOW_WAVE)
     {
-        GraphShowBuffer[i] = - ((WaveBuffer[j] + DSOParams.YPos) 
-                               / (NUMS_PER_mV / 25 * _vgrade[DSOParams.VoltageBaseGrade]));
+        int sp = DSOShowParams.XExpan;
+        for (i = 0, j = DSOShowParams.ShowStartPos; i < SHOW_BUFF_SIZE; i += sp, j++)
+        {
+            for(k = 0; (k < sp) && ((i + k) < SHOW_BUFF_SIZE); k++)
+            {
+                GraphShowBuffer[i + k] = - ((WaveBuffer[j] + DSOParams.YPos) 
+                                        / (NUMS_PER_mV / 25 * _vgrade[DSOParams.VoltageBaseGrade]));
+            }
+        }
+    }   
+    else
+    {
+        int sp = 5;
+        for (i = 0, j = 0; i < SHOW_BUFF_SIZE; i += sp, j++)
+        {
+            for(k = 0; (k < sp) && ((i + k) < SHOW_BUFF_SIZE); k++)
+            {
+                GraphShowBuffer[i + k] = - ((MagArray[j]) / 25); 
+            }
+        }
     }
+    
+
 }
 
 /*********************************************************************
@@ -934,8 +963,22 @@ void _cbKey(I8 Index, I8 Direction)
             if (--DSOParams.VoltageBaseGrade < 0)
                 DSOParams.VoltageBaseGrade++;
         }
-        WM_InvalidateWindow(RightText[vbase].Handle);WM_InvalidateWindow(RightText[vbase].Handle);
+        WM_InvalidateWindow(RightText[vbase].Handle);
         
+        break;
+
+    case mode:
+        if(Direction)
+        {
+            if (++DSOShowParams.XExpan > 5)
+                DSOParams.VoltageBaseGrade--;
+        }
+        else
+        {
+            if (--DSOShowParams.XExpan < 0)
+                DSOParams.VoltageBaseGrade++;
+        }
+        WM_InvalidateWindow(RightText[mode].Handle);
         break;
     default:
         break;

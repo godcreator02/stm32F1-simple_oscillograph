@@ -7,6 +7,10 @@
 typedef struct { I16 width, height, pointspace; } GRID;
 typedef struct { I16 x0, y0, xsize, ysize; } WIGET;
 
+#define     SHOW_WAVE       0
+#define     SHOW_FFT        1
+
+
 #define     NUMS_PER_mV               ((double)4096 / (double)3300)
 
 #define     SAMPLE_DEPTH              2048          //  存储深度1000 * 2字节（short）
@@ -55,12 +59,16 @@ typedef struct {                //  示波器物理参数
 
 
 typedef struct {                //  示波器显示参数
+    I8 ShowMode;                //  选择FFT还是波形
+
     I16 TriggerPos;
     double XBufPos;
     I16 ShowStartPos;
 
     double YRatio;
     I16 YStartPos;
+
+    I8 XExpan;
 }DSOSHOWPARAMS;
 
 typedef struct {                //  波形参数
