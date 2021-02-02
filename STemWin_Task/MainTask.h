@@ -11,6 +11,7 @@ typedef struct {                //  文本框通用结构体
     WIGET Text;
     int CornerSize;
     int Space;
+    I8 TimerFlag;
 }TEXTSTRUCT;
 
 
@@ -65,6 +66,8 @@ enum { status, upTBD, sps };
 enum { R, B, U};
 
 I16 GetTextHandle(I8 Position, I8 Index);
+void PickActiveWin(I8 Index, I8 LastIndex);
+void _cbKey(I8 Index, I8 Direction);
 
 
 #endif  //end _MAINTASK_H_

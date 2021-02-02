@@ -21,6 +21,7 @@ static uint16_t DMA_Pos_In_Array;
 void CopyDataToWaveBuff(void)
 {
     uint16_t i, j;
+   
     /* 拷贝数据到WaveBuffer，避免DMA过快覆盖数组数据 */
     /* 获取ADC_DMA当前位置 */
     ADC_DMA_Pos = ADC_DataSize - DMA_GetCurrDataCounter(ADC_DMA_CHANNEL);
@@ -57,10 +58,13 @@ void CopyDataToWaveBuff(void)
     WaveParams.PPValue = 0;
     for (i = 0; i < WAVE_BUFF_SIZE; i++)
     {
+
         WaveParams.MaxValue = ( WaveBuffer[i] > WaveParams.MaxValue ) ? WaveBuffer[i] : WaveParams.MaxValue;
         WaveParams.MinValue = ( WaveBuffer[i] < WaveParams.MinValue ) ? WaveBuffer[i] : WaveParams.MinValue;
     }
     WaveParams.PPValue = WaveParams.MaxValue - WaveParams.MinValue;
+
+    
 
 }
 

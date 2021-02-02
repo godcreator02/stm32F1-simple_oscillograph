@@ -71,8 +71,6 @@ static GUI_RECT GraphRect = { 10, 20, 260, 220 };       //  波形显示bk上的位置
 
 
 // 右边的文本框定义  ***************
-
-
 const char* _aright_text_title[] =                  // 右边文本框标题，不变的
 {
     "CHANNEL", "TIMEBASE", "V BASE", "X POS", "Y POS", "TR LEVEL", "MODE", "TR MODE",
@@ -121,7 +119,7 @@ char BottomTextInfo[][15] =
 {
     "Vp-p: 1.65V",
     "Freq: 10Hz",
-    "Period: 10ms",
+    "Min: 100mv",
 };
 // 下方的文本框定义  --------------------
 
@@ -154,6 +152,9 @@ static GRAPHPREWIN_STRUCT GraphPreWin =                  /*波形预览初始化*/
 };
 // 上方波形预览条定义 --------------------
 
+
+// 定时器handle
+static WM_HTIMER hTimer = -1;
 
 /*******************************************************************
 *
@@ -311,6 +312,26 @@ static void _cbBottomText(WM_MESSAGE* pMsg) {
             }
         }
 
+        if(WaveParams.PPValue < 1241)
+        {
+            sprintf(BottomTextInfo[vpp], "Vp-p: %dmV", (I16)((float)WaveParams.PPValue / 1.2412121212));
+        }
+        else
+        {
+            sprintf(BottomTextInfo[vpp], "Vp-p: %.2fV", (float)WaveParams.PPValue / 1.2412121212 / 1000);
+        }
+
+        if(WaveParams.MinValue < 1241)
+        {
+            sprintf(BottomTextInfo[minvalue], "Vp-p: %dmV", (I16)((float)WaveParams.MinValue / 1.2412121212));
+        }
+        else
+        {
+            sprintf(BottomTextInfo[minvalue], "Vp-p: %.2fV", (float)WaveParams.MinValue / 1.2412121212 / 1000);
+        }
+        
+
+
         GUI_SetFont(&GUI_Font13B_ASCII);
         //GUI_DispDecAt(pMsg->hWin, 0, 0, 5);
         switch (bottom_textx)
@@ -355,6 +376,7 @@ static void _cbRightText(WM_MESSAGE* pMsg) {
     I16 thistimebase;
     WM_HWIN hWin = pMsg->hWin;
 
+    int TimerId;
     switch (pMsg->MsgId) {
     case WM_PAINT:
         for (i = 0; i < 8; i++)
@@ -362,44 +384,49 @@ static void _cbRightText(WM_MESSAGE* pMsg) {
             if (hWin == RightText[i].Handle)
             {
                 right_textx = i;
+                break;
             }
         }
+        TEXT_GetText(hWin, stitle, 10);
 
         thistimebase = _tgrade[DSOParams.TimeBaseGrade].TIMEBASE;
+
         
-        if (DSOParams.TimeBaseGrade < 5) 
+        switch (right_textx)        // 对显示字符串进行赋值
         {
-            sprintf(RightTextInfo[tbase], "%dus", thistimebase * 5);
-            sprintf(RightTextInfo[xpos], "%dus", DSOParams.XPos * 5);
-        }   
-        else
-        {
-            sprintf(RightTextInfo[tbase], "%dms", thistimebase * 5 / 1000);
-            sprintf(RightTextInfo[xpos], "%.2fms", (float)(DSOParams.XPos) * 5 / 1000);
-        }
-        
-        if(DSOParams.TriggerLevel > 1241)
+        case tbase:
+            if (DSOParams.TimeBaseGrade < 5) 
+            {
+                sprintf(RightTextInfo[tbase], "%dus", thistimebase * 5);
+                sprintf(RightTextInfo[xpos], "%dus", DSOParams.XPos * 5);
+            }   
+            else
+            {
+                sprintf(RightTextInfo[tbase], "%dms", thistimebase * 5 / 1000);
+                sprintf(RightTextInfo[xpos], "%.2fms", (float)(DSOParams.XPos) * 5 / 1000);
+            }
+            break;
+        case vbase:
+            sprintf(RightTextInfo[vbase], "%dmV", _vgrade[DSOParams.VoltageBaseGrade]);
+            break;
+        case ypos:
+            sprintf(RightTextInfo[ypos], "%d", DSOParams.YPos);
+            break;
+        case trlevel:
+            if(DSOParams.TriggerLevel > 1241)
             sprintf(RightTextInfo[trlevel], "%.2fV", ((float)DSOParams.TriggerLevel/ 1.2412 / 1000 ));
         else
             sprintf(RightTextInfo[trlevel], "%dmV", (I16)(DSOParams.TriggerLevel / 1.2412));
-
-        sprintf(RightTextInfo[vbase], "%dmV", _vgrade[DSOParams.VoltageBaseGrade]);
-        sprintf(RightTextInfo[ypos], "%d", DSOParams.YPos);
-
+            break;
+        default:
+            break;
+        }
         
-
-
-
-        TEXT_GetText(hWin, stitle, 10);
-        //GUI_DispDecAt(pMsg->hWin, 0, 0, 5);
-        switch (right_textx)
+        switch (right_textx)        // 刷新   
         {
         case channel: case vbase: case ypos: case mode:
             GUI_SetColor(GUI_YELLOW);
             GUI_FillPolygon(_TextBkBig, GUI_COUNTOF(_TextBkBig), 0, 0);
-
-            GUI_SetColor(GUI_BLACK);
-            GUI_FillPolygon(_TextBkSmall, GUI_COUNTOF(_TextBkSmall), 0, 0);
 
             GUI_SetFont(&GUI_Font8_ASCII);
             GUI_SetBkColor(GUI_YELLOW);
@@ -411,10 +438,7 @@ static void _cbRightText(WM_MESSAGE* pMsg) {
         case tbase: case xpos: case trlevel: case trmode:
             GUI_SetColor(GUI_GREEN);
             GUI_FillPolygon(_TextBkBig, GUI_COUNTOF(_TextBkBig), 0, 0);
-
-            GUI_SetColor(GUI_BLACK);
-            GUI_FillPolygon(_TextBkSmall, GUI_COUNTOF(_TextBkSmall), 0, 0);
-
+            
             GUI_SetFont(&GUI_Font8_ASCII);
             GUI_SetBkColor(GUI_GREEN);
             GUI_SetColor(GUI_BLACK);
@@ -425,9 +449,33 @@ static void _cbRightText(WM_MESSAGE* pMsg) {
             break;
         }
 
-        GUI_SetBkColor(GUI_BLACK);
-        GUI_SetColor(GUI_WHITE);
+        if(RightText[right_textx].TimerFlag == 2)
+        {
+            GUI_SetColor(GUI_WHITE);
+            GUI_FillPolygon(_TextBkSmall, GUI_COUNTOF(_TextBkSmall), 0, 0);
+            GUI_SetBkColor(GUI_WHITE);
+            GUI_SetColor(GUI_BLACK);
+        }
+        else
+        {
+            GUI_SetColor(GUI_BLACK);
+            GUI_FillPolygon(_TextBkSmall, GUI_COUNTOF(_TextBkSmall), 0, 0);
+            GUI_SetBkColor(GUI_BLACK);
+            GUI_SetColor(GUI_WHITE);
+        }
         GUI_DispStringHCenterAt(RightText[right_textx].sinfo, RightText[right_textx].Text.xsize / 2, 2 + RightText[right_textx].Text.ysize / 2);
+
+        break;
+
+    case WM_TIMER:
+        TimerId = WM_GetTimerId(hTimer);
+        
+        if(RightText[TimerId].TimerFlag)
+        {
+            RightText[TimerId].TimerFlag = (RightText[TimerId].TimerFlag == 2) ? 1 : 2;
+        }
+        WM_InvalidateWindow(RightText[TimerId].Handle);
+        WM_RestartTimer(pMsg->Data.v, 1000);
 
         break;
     default:
@@ -528,9 +576,6 @@ static void Draw_Graph(void)
 *       _cbBkWindow
 */
 static void _cbBkWindow(WM_MESSAGE* pMsg) {
-    I16 lasttimebase;
-    I16 thistimebase;
-
     int NCode, Id;
     switch (pMsg->MsgId) {
 
@@ -560,95 +605,9 @@ static void _cbBkWindow(WM_MESSAGE* pMsg) {
         case WM_NOTIFICATION_RELEASED:    /* React only if released */
             switch (Id)
             {
-            case ID_BUTTON_X_LARGE:
-                if (DSOParams.TimeBaseGrade < SPSMAXGRADE)
-                {
-                    lasttimebase = _tgrade[DSOParams.TimeBaseGrade].TIMEBASE;
-                    DSOParams.TimeBaseGrade++;
-                    thistimebase = _tgrade[DSOParams.TimeBaseGrade].TIMEBASE;
-                    
-                    SetADCSampleRate(_tgrade[DSOParams.TimeBaseGrade].SPS);
-                    
-                    DSOShowParams.XBufPos = (DSOShowParams.XBufPos * ((float)lasttimebase / (float)thistimebase));
-
-                    WM_InvalidateWindow(UpText[sps].Handle);
-                    WM_InvalidateWindow(RightText[tbase].Handle);
-                    WM_InvalidateWindow(RightText[xpos].Handle);
-                }
-
-                break;
-            case ID_BUTTON_X_SHRINK:
-                if (DSOParams.TimeBaseGrade > 0)
-                {
-                    lasttimebase = _tgrade[DSOParams.TimeBaseGrade].TIMEBASE;
-                    DSOParams.TimeBaseGrade--;
-                    thistimebase = _tgrade[DSOParams.TimeBaseGrade].TIMEBASE;
-
-                    SetADCSampleRate(_tgrade[DSOParams.TimeBaseGrade].SPS);
-
-                    DSOShowParams.XBufPos = (DSOShowParams.XBufPos * (lasttimebase / thistimebase));
-                   
-                    WM_InvalidateWindow(UpText[sps].Handle);
-                    WM_InvalidateWindow(RightText[tbase].Handle);
-                    WM_InvalidateWindow(RightText[xpos].Handle);
-                }
-
-                break;
-            case ID_BUTTON_LEFT_MOVE:
-                thistimebase = _tgrade[DSOParams.TimeBaseGrade].TIMEBASE;
-                DSOParams.XPos += (thistimebase / POINTS_ONE_MOVE);
-                DSOShowParams.XBufPos += POINTS_ONE_MOVE;
-
-                WM_InvalidateWindow(RightText[xpos].Handle);
-               
-                break;
-            case ID_BUTTON_RIGHT_MOVE:
-                thistimebase = _tgrade[DSOParams.TimeBaseGrade].TIMEBASE;
-                DSOParams.XPos -= (thistimebase / POINTS_ONE_MOVE);
-                DSOShowParams.XBufPos -= POINTS_ONE_MOVE;
-
-                WM_InvalidateWindow(RightText[xpos].Handle);
-
-                break;
-
-            case ID_BUTTON_TRIGGERUP:
-                DSOParams.TriggerLevel += 10;
-                WM_InvalidateWindow(RightText[trlevel].Handle);
-                break;
-
-            case ID_BUTTON_TRIGGERDOWN:
-                DSOParams.TriggerLevel -= 10;
-                WM_InvalidateWindow(RightText[trlevel].Handle);
-                break;
-
-            case ID_BUTTON_Y_UP:
-                DSOParams.YPos += 100;
-                WM_InvalidateWindow(RightText[ypos].Handle);
-                break;
-
-            case ID_BUTTON_Y_DOWN:
-                DSOParams.YPos -= 100;
-                WM_InvalidateWindow(RightText[ypos].Handle);
-                break;
-
-            case ID_BUTTON_Y_LARGE:
-                if (++DSOParams.VoltageBaseGrade > VOLTAGEMAXGRADE)
-                    DSOParams.VoltageBaseGrade--;
-
-                WM_InvalidateWindow(RightText[vbase].Handle);
-                break;
-                
-            case ID_BUTTON_Y_SHRINK:
-                if (--DSOParams.VoltageBaseGrade < 0)
-                    DSOParams.VoltageBaseGrade++;
-
-                WM_InvalidateWindow(RightText[vbase].Handle);
-                break;
-
             default:
-                break;
+                break;    
             }
-
             break;
         }
         break;
@@ -683,42 +642,11 @@ void CreateAllWigets(void)
         UpText[i].Handle = hWin;
     }
 
-
     // 用文本框控件代替窗口控件，因为用不到窗口控件的功能
     hWin = TEXT_CreateEx(GraphPreWin.size.x0, GraphPreWin.size.y0, GraphPreWin.size.xsize, GraphPreWin.size.ysize, WM_HBKWIN, WM_CF_SHOW, 0, 0, NULL);
     WM_SetCallback(hWin, _cbGraphPreWin);
     GraphPreWin.Handle = hWin;
 
-
-    hWin = BUTTON_CreateEx(240, 20, 20, 20, WM_HBKWIN, WM_CF_SHOW, 0, ID_BUTTON_X_LARGE);
-    BUTTON_SetText(hWin, "L");
-
-    hWin = BUTTON_CreateEx(240, 40, 20, 20, WM_HBKWIN, WM_CF_SHOW, 0, ID_BUTTON_X_SHRINK);
-    BUTTON_SetText(hWin, "S");
-
-    hWin = BUTTON_CreateEx(220, 20, 20, 20, WM_HBKWIN, WM_CF_SHOW, 0, ID_BUTTON_LEFT_MOVE);
-    BUTTON_SetText(hWin, "l");
-
-    hWin = BUTTON_CreateEx(220, 40, 20, 20, WM_HBKWIN, WM_CF_SHOW, 0, ID_BUTTON_RIGHT_MOVE);
-    BUTTON_SetText(hWin, "r");
-
-    hWin = BUTTON_CreateEx(200, 20, 20, 20, WM_HBKWIN, WM_CF_SHOW, 0, ID_BUTTON_TRIGGERUP);
-    BUTTON_SetText(hWin, "tu");
-
-    hWin = BUTTON_CreateEx(200, 40, 20, 20, WM_HBKWIN, WM_CF_SHOW, 0, ID_BUTTON_TRIGGERDOWN);
-    BUTTON_SetText(hWin, "td");
-
-    hWin = BUTTON_CreateEx(180, 20, 20, 20, WM_HBKWIN, WM_CF_SHOW, 0, ID_BUTTON_Y_LARGE);
-    BUTTON_SetText(hWin, "yL");
-
-    hWin = BUTTON_CreateEx(180, 40, 20, 20, WM_HBKWIN, WM_CF_SHOW, 0, ID_BUTTON_Y_SHRINK);
-    BUTTON_SetText(hWin, "yS");
-
-    hWin = BUTTON_CreateEx(160, 20, 20, 20, WM_HBKWIN, WM_CF_SHOW, 0, ID_BUTTON_Y_UP);
-    BUTTON_SetText(hWin, "yu");
-
-    hWin = BUTTON_CreateEx(160, 40, 20, 20, WM_HBKWIN, WM_CF_SHOW, 0, ID_BUTTON_Y_DOWN);
-    BUTTON_SetText(hWin, "yd");
 }
 
 static void MY_Init(void)
@@ -737,6 +665,7 @@ static void MY_Init(void)
         RightText[i].Text.y0 = 21 + (RIGHTTEXT_YSIZE + 2) * i;
         RightText[i].Text.xsize = RIGHTTEXT_XSIZE;
         RightText[i].Text.ysize = RIGHTTEXT_YSIZE;
+        RightText[i].TimerFlag = 0;
     }
 
     //下面四个显示的初始化
@@ -807,33 +736,33 @@ static void CopyToShowBuffer(void)
 *
 *       MainTask
 */
-void MainTask(void) {
-    I32 i = 0, j = 0;
 
-    //初始化结构体
-    MY_Init();
 
-    WM_SetCreateFlags(WM_CF_MEMDEV);
+
+void MainTask(void) { 
+    
+    MY_Init();                              //初始化结构体
+
+    WM_SetCreateFlags(WM_CF_MEMDEV);        //设置使用内存设备标志，让bkwindown也使用
     GUI_Init();
     WM_SetCallback(WM_HBKWIN, &_cbBkWindow);
-    //WM_SetCreateFlags(WM_CF_MEMDEV);  /* Use memory devices on all windows to avoid flicker */
-
-    TEXT_SetDefaultTextColor(GUI_DARKBLUE);
-    TEXT_SetDefaultFont(&GUI_Font13B_1);
 
     //创建全部的控件
     CreateAllWigets();
 
+    hTimer = WM_CreateTimer(RightText[channel].Handle, channel, 1000, 0);   //创建定时器
+    RightText[channel].TimerFlag = 2;
     while (1) {
 
-        CopyDataToWaveBuff();
+        CopyDataToWaveBuff();                       //从adc采集的数组复制到showbuff
         CalShowStartPos();
         CopyToShowBuffer();
 
-        WM_InvalidateRect(WM_HBKWIN, &GraphRect);
+        WM_InvalidateRect(WM_HBKWIN, &GraphRect);   //刷新波形
         WM_InvalidateWindow(GraphPreWin.Handle);
+        WM_InvalidateWindow(BottomText[vpp].Handle);
 
-        GUI_Delay(100);
+        GUI_Delay(100);                             
 
     }
 }
@@ -857,8 +786,117 @@ I16 GetTextHandle(I8 Position, I8 Index)
         break;
     }
     return -1;
+}
 
+/* 更改当前选中的右侧文本框 */ 
+void PickActiveWin(I8 Index, I8 LastIndex)
+{
+    /* 关闭上一个计数器 */
+
+    WM_DeleteTimer(hTimer);
+    RightText[LastIndex].TimerFlag = 0;
+    WM_InvalidateWindow(RightText[LastIndex].Handle);
+
+    /* 开启新的计数器 */
+    hTimer = WM_CreateTimer(RightText[Index].Handle, Index, 1000, 0);
+    RightText[Index].TimerFlag = 2;
+    WM_InvalidateWindow(RightText[Index].Handle);
+}
+
+/* 按键按下后的回调函数 
+*  方向 1为增加、左移、上移
+*/
+void _cbKey(I8 Index, I8 Direction)
+{
+    I16 lasttimebase, thistimebase;
+    switch (Index)
+    {
+    case tbase:
+        if(Direction)
+        {
+            if (DSOParams.TimeBaseGrade < SPSMAXGRADE)
+            {
+                lasttimebase = _tgrade[DSOParams.TimeBaseGrade].TIMEBASE;
+                DSOParams.TimeBaseGrade++;
+                thistimebase = _tgrade[DSOParams.TimeBaseGrade].TIMEBASE;
+                
+                SetADCSampleRate(_tgrade[DSOParams.TimeBaseGrade].SPS);
+                
+                DSOShowParams.XBufPos = (DSOShowParams.XBufPos * ((float)lasttimebase / (float)thistimebase));
+            }
+        }
+        else
+        {
+            if (DSOParams.TimeBaseGrade > 0)
+            {
+                lasttimebase = _tgrade[DSOParams.TimeBaseGrade].TIMEBASE;
+                DSOParams.TimeBaseGrade--;
+                thistimebase = _tgrade[DSOParams.TimeBaseGrade].TIMEBASE;
+
+                SetADCSampleRate(_tgrade[DSOParams.TimeBaseGrade].SPS);
+                DSOShowParams.XBufPos = (DSOShowParams.XBufPos * (lasttimebase / thistimebase));                            
+            }
+        }    
+        WM_InvalidateWindow(UpText[sps].Handle);
+        WM_InvalidateWindow(RightText[tbase].Handle);
+        WM_InvalidateWindow(RightText[xpos].Handle);    
+        break;
     
-
+    case xpos:
+        if(Direction)
+        {
+            thistimebase = _tgrade[DSOParams.TimeBaseGrade].TIMEBASE;
+            DSOParams.XPos += (thistimebase / POINTS_ONE_MOVE);
+            DSOShowParams.XBufPos += POINTS_ONE_MOVE;           
+        }
+        else
+        {
+            thistimebase = _tgrade[DSOParams.TimeBaseGrade].TIMEBASE;
+            DSOParams.XPos -= (thistimebase / POINTS_ONE_MOVE);
+            DSOShowParams.XBufPos -= POINTS_ONE_MOVE;
+        }
+        WM_InvalidateWindow(RightText[xpos].Handle);
+        break;
+    case trlevel:
+        if(Direction)
+        {
+            DSOParams.TriggerLevel += 10;
+        }
+        else
+        {
+            DSOParams.TriggerLevel -= 10;
+        }
+        WM_InvalidateWindow(RightText[trlevel].Handle);
+        
+        break;
+    case ypos:
+        if(Direction)
+        {
+            DSOParams.YPos += 100;
+        }
+        else
+        {
+            DSOParams.YPos -= 100;
+        }
+        WM_InvalidateWindow(RightText[ypos].Handle);
+        break;
+    
+    case vbase:
+        if(Direction)
+        {
+            if (++DSOParams.VoltageBaseGrade > VOLTAGEMAXGRADE)
+                DSOParams.VoltageBaseGrade--;
+        }
+        else
+        {
+            if (--DSOParams.VoltageBaseGrade < 0)
+                DSOParams.VoltageBaseGrade++;
+        }
+        WM_InvalidateWindow(RightText[vbase].Handle);WM_InvalidateWindow(RightText[vbase].Handle);
+        
+        break;
+    default:
+        break;
+    }
 }
 /*************************** End of file ****************************/

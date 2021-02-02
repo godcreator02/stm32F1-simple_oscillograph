@@ -1,28 +1,8 @@
 #ifndef  _DSO_H_
 #define  _DSO_H_
 
-#ifndef   U8
-#define U8  unsigned char
-#endif
-#ifndef   U16
-#define U16 unsigned short
-#endif
-#ifndef   U32
-#define U32 unsigned long
-#endif
-#ifndef   I8
-#define I8  signed char
-#endif
-#ifndef   I16
-#define I16 signed short
-#endif
-#ifndef   I32
-#define I32 signed long
-#endif
+#include "DIALOG.h"
 
-#ifndef   GUI_COUNTOF(a)
-    #define GUI_COUNTOF(a)          (sizeof(a) / sizeof(a[0]))
-#endif
 
 typedef struct { I16 width, height, pointspace; } GRID;
 typedef struct { I16 x0, y0, xsize, ysize; } WIGET;
@@ -104,6 +84,8 @@ extern const I16 _vgrade[VOLTAGEMAXGRADE + 1];
 
 void CalShowStartPos(void);
 void CopyDataToWaveBuff(void);
+
+
 
 #endif  //end _DSO_H_
 

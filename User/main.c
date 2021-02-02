@@ -44,7 +44,7 @@
 /* 创建任务句柄 */
 static TaskHandle_t AppTaskCreate_Handle = NULL;
 /* LED任务句柄 */
-static TaskHandle_t DataProcess_Task_Handle = NULL;
+static TaskHandle_t KeyScan_Task_Handle = NULL;
 /* Touch任务句柄 */
 static TaskHandle_t Touch_Task_Handle = NULL;
 /* GUI任务句柄 */
@@ -138,19 +138,19 @@ static void AppTaskCreate(void)
     taskENTER_CRITICAL(); //进入临界区
 
     xReturn = xTaskCreate((TaskFunction_t)KeyScan_Task,        /* 任务入口函数 */
-                          (const char *)"DataProcess_Task",        /* 任务名称 */
+                          (const char *)"KeyScan_Task",        /* 任务名称 */
                           (uint16_t)128,                           /* 任务栈大小 */
                           (void *)NULL,                            /* 任务入口函数参数 */
                           (UBaseType_t)10,                         /* 任务的优先级 */
-                          (TaskHandle_t)&DataProcess_Task_Handle); /* 任务控制块指针 */
+                          (TaskHandle_t)&KeyScan_Task_Handle); /* 任务控制块指针 */
     if (pdPASS == xReturn)
-        printf("创建DataProcess_Task任务成功！\r\n");
+        printf("创建KeyScan_Task任务成功！\r\n");
 
     xReturn = xTaskCreate((TaskFunction_t)Touch_Task,        /* 任务入口函数 */
                           (const char *)"Touch_Task",        /* 任务名称 */
                           (uint16_t)128,                     /* 任务栈大小 */
                           (void *)NULL,                      /* 任务入口函数参数 */
-                          (UBaseType_t)3,                    /* 任务的优先级 */
+                          (UBaseType_t)4,                    /* 任务的优先级 */
                           (TaskHandle_t)&Touch_Task_Handle); /* 任务控制块指针 */
     if (pdPASS == xReturn)
         printf("创建Touch_Task任务成功！\r\n");
@@ -159,7 +159,7 @@ static void AppTaskCreate(void)
                           (const char *)"GUI_Task",        /* 任务名称 */
                           (uint16_t)512,                  /* 任务栈大小 */
                           (void *)NULL,                    /* 任务入口函数参数 */
-                          (UBaseType_t)4,                  /* 任务的优先级 */
+                          (UBaseType_t)3,                  /* 任务的优先级 */
                           (TaskHandle_t)&GUI_Task_Handle); /* 任务控制块指针 */
     if (pdPASS == xReturn)
         printf("创建GUI_Task任务成功！\r\n");
@@ -188,40 +188,31 @@ static void AppTaskCreate(void)
 
 static void KeyScan_Task(void *parameter)
 {
-    uint8_t i;
+    static int8_t Index, LastIndex;
 
     while (1)
     {
         switch (Key_Scan(KEY1_GPIO_PORT, KEY1_GPIO_PIN))
         {
-        case KEY_ON:
-            printf("Key1ON\n");
+        case KEY_ON:;
+            _cbKey(Index, 1);
             break;
         
         case KEY_HOLD:
-            printf("Key1HOLD\n");
+            _cbKey(Index, 1);
             break;
 
         case KEY_2ClICK:
-            printf("Key1_222222click\n");
-            break;
+            LastIndex = Index;
+            if(Index++ == trmode)
+                Index = channel;
+            PickActiveWin(Index, LastIndex);
 
+            break;
         case KEY_3ClICK:
-            printf("Key1_333333click\n");
+            printf("KEY1_3ClICK");
             break;
 
-        case KEY_4ClICK:
-            printf("Key1_444444click\n");
-            break;
-        
-        case KEY_5ClICK:
-            printf("Key1_555555click\n");
-            break;
-
-        case KEY_OFF:
-            printf("\t\tKey1OFF\n");
-            break;
-        
         case KEY_ERROR:
             printf("error\n");
             break;
@@ -233,20 +224,24 @@ static void KeyScan_Task(void *parameter)
         switch (Key_Scan(KEY2_GPIO_PORT, KEY2_GPIO_PIN))
         {
         case KEY_ON:
-            printf("Key2ON\n");
+            _cbKey(Index, 0);
             break;
         
         case KEY_HOLD:
-            printf("Key2HOLD\n");
+            _cbKey(Index, 0);
             break;
 
         case KEY_2ClICK:
-            printf("Key2_2click\n");
+            LastIndex = Index;
+            if(Index-- == channel)
+                Index = trmode;
+            PickActiveWin(Index, LastIndex);
             break;
-        
-        case KEY_OFF:
-            printf("Key2OFF\n");
+
+         case KEY_3ClICK:
+            printf("\t\tKEY2_3ClICK");
             break;
+
         case KEY_ERROR:
             printf("error\n");
             break;
@@ -288,7 +283,7 @@ static void GUI_Task(void *parameter)
 
     while (1)
     {
-        //MainTask();
+        MainTask();
         vTaskDelay(10000);
     }
 }

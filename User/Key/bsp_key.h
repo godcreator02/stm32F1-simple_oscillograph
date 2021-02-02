@@ -51,14 +51,14 @@ typedef struct
 #define    	KEY_3ClICK				3
 #define    	KEY_4ClICK				4
 #define    	KEY_5ClICK				5
-#define     KEY_MAX_MULCLICK		KEY_5ClICK
+#define     KEY_MAX_MULCLICK		KEY_2ClICK
 
 #define		KEY_IDLE		8
 #define		KEY_ERROR		10
 
-#define		HOLD_COUNTS					50*2
-#define 	SHAKES_COUNTS				4*2
-#define		MULTIPLE_CLICK_COUNTS		10*2
+#define		HOLD_COUNTS					100
+#define 	SHAKES_COUNTS				8
+#define		MULTIPLE_CLICK_COUNTS		20
 
 void Key_GPIO_Config(void);
 uint8_t Key_Scan(GPIO_TypeDef* GPIOx,uint16_t GPIO_Pin);
