@@ -31,6 +31,7 @@ Purpose     : Example demonstrating DIALOG and widgets
 #include "DSO.h"
 #include "MainTask.h"
 #include "./bsp_adc.h"
+#include "./dac/bsp_dac.h"
 
 // debug
 char chInput[512];
@@ -831,7 +832,6 @@ static void CopyToShowBuffer(void)
 
 
 void MainTask(void) { 
-    
     MY_Init();                              //初始化结构体
 
     WM_SetCreateFlags(WM_CF_MEMDEV);        //设置使用内存设备标志，让bkwindown也使用
@@ -841,6 +841,17 @@ void MainTask(void) {
     //创建全部的控件
     CreateAllWigets();
 
+
+    SetDACFreq(_DACgrade[DAC_DEFAULT_GRADE]);
+    DACParams.DACFreqGrade = DAC_DEFAULT_GRADE;
+    WM_InvalidateWindow(DACText.Handle);
+
+    SetADCSampleRate(_tgrade[SPS_DEFAULT_GRADE].SPS);
+    DSOParams.TimeBaseGrade = SPS_DEFAULT_GRADE;
+    WM_InvalidateWindow(UpText[sps].Handle);
+    WM_InvalidateWindow(RightText[tbase].Handle);
+    
+
     hTimer = WM_CreateTimer(RightText[channel].Handle, channel, 1000, 0);   //创建定时器
     RightText[channel].TimerFlag = 2;
     while (1) {
@@ -848,16 +859,13 @@ void MainTask(void) {
         CopyDataToWaveBuff();                       //从adc采集的数组复制到showbuff
         CalShowStartPos();
         CopyToShowBuffer();
-
         FFT_GetFreq(_tgrade[DSOParams.TimeBaseGrade].SPS);
 
         WM_InvalidateRect(WM_HBKWIN, &GraphRect);   //刷新波形
         WM_InvalidateWindow(GraphPreWin.Handle);
         WM_InvalidateWindow(BottomText[vpp].Handle);
-        WM_InvalidateWindow(BottomText[freq].Handle);
-        WM_InvalidateWindow(DACText.Handle);
 
-        GUI_Delay(100);                             
+        GUI_Delay(50); 
 
     }
 }
@@ -993,15 +1001,32 @@ void _cbKey(I8 Index, I8 Direction)
     case mode:
         if(Direction)
         {
-            if (++DSOShowParams.XExpan > 5)
-                DSOParams.VoltageBaseGrade--;
+            if (++DSOShowParams.XExpan > 10)
+                DSOShowParams.XExpan--;
         }
         else
         {
-            if (--DSOShowParams.XExpan < 0)
-                DSOParams.VoltageBaseGrade++;
+            if (--DSOShowParams.XExpan < 1)
+                DSOShowParams.XExpan++;
         }
         WM_InvalidateWindow(RightText[mode].Handle);
+        break;
+
+    case dac:
+        if(Direction)
+        {
+            if(DACParams.DACFreqGrade++ == DACMAXGRADE)
+                DACParams.DACFreqGrade--;
+            SetDACFreq(_DACgrade[DACParams.DACFreqGrade]);
+        }
+        else
+        {
+            if(DACParams.DACFreqGrade-- == 0)
+                DACParams.DACFreqGrade++;
+            SetDACFreq(_DACgrade[DACParams.DACFreqGrade]);
+        }
+        WM_InvalidateWindow(DACText.Handle);
+        
         break;
     default:
         break;

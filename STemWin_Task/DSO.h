@@ -25,10 +25,10 @@ typedef struct { I16 x0, y0, xsize, ysize; } WIGET;
 #define     VOLTAGE_DEFAULT_GRADE      8
 
 #define     SPSMAXGRADE                10           // 采样率挡位 0-10,    以5us为单位1
-#define     SPS_DEFAULT_GRADE          5
+#define     SPS_DEFAULT_GRADE          0
 
 #define     DACMAXGRADE                5           // DAC挡位 0-5
-#define     DAC_DEFAULT_GRADE          0    
+#define     DAC_DEFAULT_GRADE          4    
 
 
 #define     LEFT_LIMIT                MID_POS_SHOWBUF 

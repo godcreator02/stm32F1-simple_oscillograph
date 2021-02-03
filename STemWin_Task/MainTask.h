@@ -60,7 +60,7 @@ typedef struct {                //  示波器显示文本结构体
 #define     GRAPHPRE_YSIZE               16
 #define     GRAPHPRE_MAXNUMS             1
 
-enum { channel, tbase, vbase, xpos, ypos, trlevel, mode, trmode };
+enum { channel, tbase, vbase, xpos, ypos, trlevel, mode, trmode, dac };
 enum { vpp, freq, minvalue, bottomTBD };
 enum { status, upTBD, sps };
 enum { R, B, U};

@@ -210,9 +210,7 @@ static void KeyScan_Task(void *parameter)
 
             break;
         case KEY_3ClICK:
-            if(DACParams.DACFreqGrade++ == DACMAXGRADE)
-                DACParams.DACFreqGrade--;
-            SetDACFreq(_DACgrade[DACParams.DACFreqGrade]);
+            _cbKey(dac, 1);
             break;
 
         case KEY_ERROR:
@@ -241,9 +239,7 @@ static void KeyScan_Task(void *parameter)
             break;
 
          case KEY_3ClICK:
-            if(DACParams.DACFreqGrade-- == 0)
-                DACParams.DACFreqGrade++;
-            SetDACFreq(_DACgrade[DACParams.DACFreqGrade]);
+            _cbKey(dac, 0);
 
             break;
 
