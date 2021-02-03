@@ -421,12 +421,12 @@ static void _cbRightText(WM_MESSAGE* pMsg) {
         case tbase:
             if (DSOParams.TimeBaseGrade < 5) 
             {
-                sprintf(RightTextInfo[tbase], "%dus", thistimebase * 5);
+                sprintf(RightTextInfo[tbase], "%.1fus", (float)thistimebase * 5 / DSOShowParams.XExpan);
                 sprintf(RightTextInfo[xpos], "%dus", DSOParams.XPos * 5);
             }   
             else
             {
-                sprintf(RightTextInfo[tbase], "%dms", thistimebase * 5 / 1000);
+                sprintf(RightTextInfo[tbase], "%.1fms", (float)thistimebase * 5 / 1000 / DSOShowParams.XExpan);
                 sprintf(RightTextInfo[xpos], "%.2fms", (float)(DSOParams.XPos) * 5 / 1000);
             }
             break;
@@ -662,6 +662,7 @@ static void _cbBkWindow(WM_MESSAGE* pMsg) {
                     BUTTON_SetText(hButton, "->STOP");
                     DSOParams.StopFlag = DSO_RUN;                  
                 }
+                
 
                 break;
             default:
@@ -1008,6 +1009,7 @@ void _cbKey(I8 Index, I8 Direction)
                 DSOShowParams.XExpan++;
         }
         WM_InvalidateWindow(RightText[mode].Handle);
+        WM_InvalidateWindow(RightText[tbase].Handle);
         break;
 
     case dac:

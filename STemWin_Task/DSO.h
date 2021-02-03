@@ -30,7 +30,7 @@ typedef struct { I16 x0, y0, xsize, ysize; } WIGET;
 #define     SPS_DEFAULT_GRADE          4
 
 #define     DACMAXGRADE                5           // DACµ²Î» 0-5
-#define     DAC_DEFAULT_GRADE          4    
+#define     DAC_DEFAULT_GRADE          2    
 
 
 #define     LEFT_LIMIT                MID_POS_SHOWBUF 
