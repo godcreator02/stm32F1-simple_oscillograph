@@ -44,7 +44,7 @@ void FFT_GetFreq(I32 SPS)
             MagArray[i] = (u32)(Mag * 65536);
         }
     }
-
+    MagArray[0] /= 2; 
     for (i = 2, maxtemp = MagArray[1], pos = 1; i < N / 2; i++)
     {
         maxtemp = (maxtemp > MagArray[i]) ? maxtemp : MagArray[i];

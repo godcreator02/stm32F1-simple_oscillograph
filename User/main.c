@@ -289,7 +289,6 @@ static void GUI_Task(void *parameter)
     while (1)
     {
         MainTask();
-        vTaskDelay(10000);
     }
 }
 

@@ -142,6 +142,23 @@ static GRAPHPREWIN_STRUCT GraphPreWin =                  /*波形预览初始化*/
 };
 // 上方波形预览条定义 --------------------
 
+// DAC文本框定义  **********************
+static char DACTextInfo [10] = {"1000Hz"};  
+static TEXTSTRUCT DACText = 
+{
+    0, NULL, DACTextInfo, 
+    {
+        .x0 = 260,
+        .y0 = 220,
+        .xsize = 60,
+        .ysize = 20,
+    },
+    0,
+    0,
+    0 
+};        
+// DAC文本框定义  ----------------------
+
 
 // 定时器handle
 static WM_HTIMER hTimer = -1;
@@ -152,11 +169,11 @@ static WM_HTIMER hTimer = -1;
 *
 ********************************************************************
 */
+
 /*********************************************************************
 *
 *       _cbDACWin
 */
-
 static void _cbDACWin(WM_MESSAGE* pMsg) {
     WM_HWIN hWin = pMsg->hWin;
     GUI_RECT RECT;
@@ -164,9 +181,14 @@ static void _cbDACWin(WM_MESSAGE* pMsg) {
 
     switch (pMsg->MsgId) {
     case WM_PAINT:
-        GUI_SetBkColor(GUI_BLACK);
+        GUI_SetColor(GUI_RED);
+        GUI_FillRoundedRect(2, 2, 56, 18, 2);
+
+        GUI_SetFont(GUI_FONT_13B_1);
+        GUI_SetBkColor(GUI_RED);
         GUI_SetColor(GUI_WHITE);
-        GUI_DispDecAt(_DACgrade[DACParams.DACFreqGrade], 0, 0, 6);
+        sprintf(DACText.sinfo, "%dHz", _DACgrade[DACParams.DACFreqGrade]);
+        GUI_DispStringHCenterAt(DACText.sinfo, 30, 3);
 
         break;
     default:
@@ -610,7 +632,7 @@ static void _cbBkWindow(WM_MESSAGE* pMsg) {
 
         GUI_SetBkColor(GUI_BLACK);
         GUI_SetColor(GUI_WHITE);
-        GUI_DispDecAt(_DACgrade[DACParams.DACFreqGrade], 20, 40, 6);
+        
 
         break;
 
@@ -635,12 +657,12 @@ static void _cbBkWindow(WM_MESSAGE* pMsg) {
                 hButton = pMsg->hWinSrc;
                 if(DSOShowParams.ShowMode == SHOW_FFT)
                 {
-                    BUTTON_SetText(hButton, "FFT");
+                    BUTTON_SetText(hButton, "->FFT");
                     DSOShowParams.ShowMode = SHOW_WAVE;
                 }
                 else
                 {
-                    BUTTON_SetText(hButton, "WAVE");
+                    BUTTON_SetText(hButton, "->WAVE");
                     DSOShowParams.ShowMode = SHOW_FFT;
                 }
                 break;
@@ -692,6 +714,7 @@ void CreateAllWigets(void)
 
     hWin = TEXT_CreateEx(260, 220, 60, 20, WM_HBKWIN, WM_CF_SHOW, 0, 0, NULL);
     WM_SetCallback(hWin, _cbDACWin);
+    DACText.Handle = hWin;
 
     hWin = BUTTON_CreateEx(260, 0, 60, 20, WM_HBKWIN, WM_CF_SHOW, 0, ID_BUTTON_MODE_SWITCH);
     BUTTON_SetText(hWin, "FFT");
@@ -766,10 +789,11 @@ static void MY_Init(void)
 static void CopyToShowBuffer(void)
 {
     int i, j, k;
-    
+    int sp = DSOShowParams.XExpan;
+
     if(DSOShowParams.ShowMode == SHOW_WAVE)
     {
-        int sp = DSOShowParams.XExpan;
+        
         for (i = 0, j = DSOShowParams.ShowStartPos; i < SHOW_BUFF_SIZE; i += sp, j++)
         {
             for(k = 0; (k < sp) && ((i + k) < SHOW_BUFF_SIZE); k++)
@@ -781,7 +805,6 @@ static void CopyToShowBuffer(void)
     }   
     else
     {
-        int sp = 5;
         for (i = 0, j = 0; i < SHOW_BUFF_SIZE; i += sp, j++)
         {
             for(k = 0; (k < sp) && ((i + k) < SHOW_BUFF_SIZE); k++)
@@ -832,6 +855,7 @@ void MainTask(void) {
         WM_InvalidateWindow(GraphPreWin.Handle);
         WM_InvalidateWindow(BottomText[vpp].Handle);
         WM_InvalidateWindow(BottomText[freq].Handle);
+        WM_InvalidateWindow(DACText.Handle);
 
         GUI_Delay(100);                             
 
@@ -851,7 +875,6 @@ I16 GetTextHandle(I8 Position, I8 Index)
     
     case U:
         return UpText[Index].Handle;
-
     
     default:
         break;
