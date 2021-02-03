@@ -18,7 +18,7 @@
 
 测得另一个单片产生的PWM波
 
-<img src="C:\Users\godcreator\Desktop\无标题.jpg" alt="无标题" style="zoom: 25%;" />
+<img src="G:\github\stm32\示波器\rewrite\stm32F1-simple_oscillograph_rewrite\运行截图.jpg" alt="运行截图" style="zoom:33%;" />
 
 ## 功能总览
 > 1. 界面完全更新
