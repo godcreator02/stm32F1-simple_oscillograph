@@ -53,7 +53,7 @@ typedef struct {                //  示波器显示文本结构体
 #define     UPTEXT_R_XSIZE             60
 #define     UPTEXT_YSIZE               16
 #define     UPTEXT_SPACE               2
-#define     UPTEXT_MAXNUMS             3
+#define     UPTEXT_MAXNUMS             1
 
 // 上方波形预览条
 #define     GRAPHPRE_XSIZE               127
@@ -62,7 +62,7 @@ typedef struct {                //  示波器显示文本结构体
 
 enum { channel, tbase, vbase, xpos, ypos, trlevel, mode, trmode, dac };
 enum { vpp, freq, minvalue, bottomTBD };
-enum { status, upTBD, sps };
+enum { sps };
 enum { R, B, U};
 
 I16 GetTextHandle(I8 Position, I8 Index);

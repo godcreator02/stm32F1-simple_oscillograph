@@ -55,6 +55,7 @@ char chInput[512];
 #define ID_RightText_tbase          (GUI_ID_USER + 0x11)
 
 #define ID_BUTTON_MODE_SWITCH       (GUI_ID_USER + 0x20)
+#define ID_BUTTON_STOP_WAVE         (GUI_ID_USER + 0x21)
 
 
 
@@ -119,8 +120,6 @@ char BottomTextInfo[][15] =
 static TEXTSTRUCT UpText[UPTEXT_MAXNUMS] = { 0 };                   /* 在后面初始化 */
 char UpTextInfo[][12] =
 {
-    "T'D",
-    "TBD",
     "200kSa/s",
 };
 // 上方文本框定义  ----------------------
@@ -170,6 +169,7 @@ static WM_HTIMER hTimer = -1;
 *
 ********************************************************************
 */
+
 
 /*********************************************************************
 *
@@ -286,15 +286,6 @@ static void _cbUpText(WM_MESSAGE* pMsg) {
         //GUI_DispDecAt(pMsg->hWin, 0, 0, 5);
         switch (up_textx)
         {
-        case status:
-            GUI_SetColor(GUI_YELLOW);
-            GUI_FillRoundedRect(0, 0, UPTEXT_L_XSIZE, UPTEXT_YSIZE, 2);
-
-            GUI_SetBkColor(GUI_YELLOW);
-            GUI_SetColor(GUI_BLACK);
-            GUI_DispStringHCenterAt(UpText[up_textx].sinfo, UPTEXT_L_XSIZE / 2, 0);
-            break;
-
         case sps:
             GUI_SetColor(GUI_YELLOW);
             GUI_FillRoundedRect(0, 0, UPTEXT_R_XSIZE, UPTEXT_YSIZE, 2);
@@ -304,14 +295,6 @@ static void _cbUpText(WM_MESSAGE* pMsg) {
             GUI_DispStringHCenterAt(UpText[up_textx].sinfo, UPTEXT_R_XSIZE / 2 + 1, 0);
             break;
 
-        case upTBD:
-            GUI_SetColor(GUI_GREEN);
-            GUI_FillRoundedRect(0, 0, UPTEXT_L_XSIZE, UPTEXT_YSIZE, 2);
-
-            GUI_SetBkColor(GUI_GREEN);
-            GUI_SetColor(GUI_BLACK);
-            GUI_DispStringHCenterAt(UpText[up_textx].sinfo, UPTEXT_L_XSIZE / 2 + 1, 0);
-            break;
         default:
             break;
         }
@@ -633,7 +616,7 @@ static void _cbBkWindow(WM_MESSAGE* pMsg) {
 
         GUI_SetBkColor(GUI_BLACK);
         GUI_SetColor(GUI_WHITE);
-        
+
 
         break;
 
@@ -666,6 +649,20 @@ static void _cbBkWindow(WM_MESSAGE* pMsg) {
                     BUTTON_SetText(hButton, "->WAVE");
                     DSOShowParams.ShowMode = SHOW_FFT;
                 }
+                break;
+            case ID_BUTTON_STOP_WAVE:
+                hButton = pMsg->hWinSrc;
+                if(DSOParams.StopFlag == DSO_RUN)
+                {
+                    BUTTON_SetText(hButton, "->T'D");
+                    DSOParams.StopFlag = DSO_STOP;
+                }
+                else
+                {
+                    BUTTON_SetText(hButton, "->STOP");
+                    DSOParams.StopFlag = DSO_RUN;                  
+                }
+
                 break;
             default:
                 break;    
@@ -717,8 +714,11 @@ void CreateAllWigets(void)
     WM_SetCallback(hWin, _cbDACWin);
     DACText.Handle = hWin;
 
-    hWin = BUTTON_CreateEx(260, 0, 60, 20, WM_HBKWIN, WM_CF_SHOW, 0, ID_BUTTON_MODE_SWITCH);
-    BUTTON_SetText(hWin, "FFT");
+    hWin = BUTTON_CreateEx(262, 2, 56, 18, WM_HBKWIN, WM_CF_SHOW, 0, ID_BUTTON_MODE_SWITCH);
+    BUTTON_SetText(hWin, "->FFT");
+
+    hWin = BUTTON_CreateEx(10, 2, 58, 16, WM_HBKWIN, WM_CF_SHOW, 0, ID_BUTTON_STOP_WAVE);
+    BUTTON_SetText(hWin, "->STOP");
 
 }
 
@@ -758,16 +758,10 @@ static void MY_Init(void)
     //上面两个文本初始化
     for (i = 0; i < UPTEXT_MAXNUMS; i++)
     {
-        if (i != 2)
-        {
-            UpText[i].Text.x0 = 10 + (UPTEXT_L_XSIZE + 2) * i;
-            UpText[i].Text.xsize = UPTEXT_L_XSIZE;
-        }
-        else
-        {
-            UpText[i].Text.x0 = 259 - UPTEXT_R_XSIZE;
-            UpText[i].Text.xsize = UPTEXT_R_XSIZE;
-        }
+        
+        UpText[i].Text.x0 = 259 - UPTEXT_R_XSIZE;
+        UpText[i].Text.xsize = UPTEXT_R_XSIZE;
+        
 
 
         UpText[i].CornerSize = 0;
@@ -855,11 +849,15 @@ void MainTask(void) {
     hTimer = WM_CreateTimer(RightText[channel].Handle, channel, 1000, 0);   //创建定时器
     RightText[channel].TimerFlag = 2;
     while (1) {
-
-        CopyDataToWaveBuff();                       //从adc采集的数组复制到showbuff
+        if(DSOParams.StopFlag == DSO_RUN)
+        {
+            CopyDataToWaveBuff();    
+            FFT_GetFreq(_tgrade[DSOParams.TimeBaseGrade].SPS);                   
+        }
+        
         CalShowStartPos();
         CopyToShowBuffer();
-        FFT_GetFreq(_tgrade[DSOParams.TimeBaseGrade].SPS);
+        
 
         WM_InvalidateRect(WM_HBKWIN, &GraphRect);   //刷新波形
         WM_InvalidateWindow(GraphPreWin.Handle);

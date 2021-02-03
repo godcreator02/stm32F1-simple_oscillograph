@@ -10,6 +10,8 @@ typedef struct { I16 x0, y0, xsize, ysize; } WIGET;
 #define     SHOW_WAVE       0
 #define     SHOW_FFT        1
 
+#define     DSO_STOP        0
+#define     DSO_RUN         1
 
 #define     NUMS_PER_mV               ((double)4096 / (double)3300)
 
@@ -25,7 +27,7 @@ typedef struct { I16 x0, y0, xsize, ysize; } WIGET;
 #define     VOLTAGE_DEFAULT_GRADE      8
 
 #define     SPSMAXGRADE                10           // 采样率挡位 0-10,    以5us为单位1
-#define     SPS_DEFAULT_GRADE          0
+#define     SPS_DEFAULT_GRADE          4
 
 #define     DACMAXGRADE                5           // DAC挡位 0-5
 #define     DAC_DEFAULT_GRADE          4    
@@ -49,6 +51,7 @@ typedef struct {                //  采样率和时基对应
 typedef struct {                //  示波器物理参数
     //I32 SampleRate;
     const I16 Depth;
+    I8 StopFlag;
     char TriggerMode;
     I16 TriggerLevel;
     I32 XPos;
